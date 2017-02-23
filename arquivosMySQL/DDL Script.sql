@@ -21,7 +21,7 @@ tipo_est enum('Petshop', 'Clínica') not null,
 primary key (codigo),
 foreign key (id_almox) references ALMOXARIFADO(id) ON DELETE CASCADE);
 CREATE TABLE CLIENTE(
-CPF integer(11), 
+CPF varchar(12), 
 email varchar(40)  not null, 
 dt_nasc date  not null, 
 cidade varchar(30)  not null, 
@@ -34,12 +34,12 @@ senha varchar(15) not null,
 confirmado boolean default false,
 primary key (CPF));
 CREATE TABLE TELEFONES(
-cpf_cl integer(11), 
+cpf_cl varchar(12), 
 fone integer(11) not null,
 primary key (cpf_cl, fone),
 foreign key (cpf_cl) references CLIENTE (CPF));
 CREATE TABLE FUNCIONARIO(
-CPF integer(11), 
+CPF varchar(11), 
 email varchar(40)  not null, 
 dt_nasc date  not null, 
 cidade varchar(30)  not null, 
@@ -75,7 +75,7 @@ id integer(7) AUTO_INCREMENT,
 nomea varchar(20) not null, 
 dt_nasc date not null,
 idade integer(2) not null, 
-cpf_cliente integer(11) not null, 
+cpf_cliente varchar(12) not null, 
 cod_raça integer(7) not null,
 primary key (id),
 foreign key(cpf_cliente) references CLIENTE(CPF),
@@ -90,7 +90,7 @@ dia date not null,
 v_total numeric(6,2) not null, 
 stats enum('confirmado', 'não finalizado', 'erro ao processar pedido') not null, 
 desconto numeric(6,2), 
-cpf_cliente integer(11) not null,
+cpf_cliente varchar(12) not null,
 primary key (cod),
 check (v_total >0),
 foreign key(cpf_cliente) references CLIENTE(CPF));
@@ -104,7 +104,7 @@ primary key(cod),
 check (vl_total>0),
 foreign key(cod_pedido) references PEDIDO_PRODUTO(cod) ON DELETE CASCADE);
 CREATE TABLE AGENDAMENTO(
-id varchar(10), 
+id varchar(16), 
 tipo_agendamento enum('PET', 'CLI', 'LAB') not null, 
 confirmado boolean default false, 
 foi_efetivado boolean default false, 
@@ -217,8 +217,8 @@ check (valor_parcial>0),
 foreign key(cod_pedido) references PEDIDO_PRODUTO(cod) ON DELETE CASCADE,
 foreign key(cod_produto) references PRODUTO_REF(cod) ON DELETE CASCADE);
 CREATE TABLE REALIZA(
-cpf_cliente integer(11), 
-cpf_func integer(11), 
+cpf_cliente varchar(12), 
+cpf_func varchar(11), 
 id_agend varchar(10), 
 data_marcada date not null,
 primary key (cpf_cliente, cpf_func, id_agend),
@@ -226,13 +226,13 @@ foreign key(cpf_cliente) references CLIENTE(CPF),
 foreign key(cpf_func) references FUNCIONARIO(CPF),
 foreign key(id_agend) references AGENDAMENTO(id) ON DELETE CASCADE);
 CREATE TABLE POSSUI_HOR(
-CPF_func integer(11), 
+CPF_func varchar(11), 
 id_horario integer(7),
 primary key (CPF_func, id_horario),
 foreign key(CPF_func) references FUNCIONARIO(CPF),
 foreign key(id_horario) references HORARIO(id));
 CREATE TABLE TEM_ESP(
-CPF_vet integer(11), 
+CPF_vet varchar(11), 
 id_esp integer(7),
 primary key (CPF_vet, id_esp),
 foreign key(CPF_vet) references FUNCIONARIO(CPF),
