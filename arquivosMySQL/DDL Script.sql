@@ -21,7 +21,7 @@ tipo_est enum('Petshop', 'Clínica') not null,
 primary key (codigo),
 foreign key (id_almox) references ALMOXARIFADO(id) ON DELETE CASCADE);
 CREATE TABLE CLIENTE(
-CPF varchar(12), 
+CPF char(12), 
 email varchar(40)  not null, 
 dt_nasc date  not null, 
 cidade varchar(30)  not null, 
@@ -34,12 +34,12 @@ senha varchar(15) not null,
 confirmado boolean default false,
 primary key (CPF));
 CREATE TABLE TELEFONES(
-cpf_cl varchar(12), 
+cpf_cl char(12), 
 fone integer(11) not null,
 primary key (cpf_cl, fone),
 foreign key (cpf_cl) references CLIENTE (CPF));
 CREATE TABLE FUNCIONARIO(
-CPF varchar(11), 
+CPF char(11), 
 email varchar(40)  not null, 
 dt_nasc date  not null, 
 cidade varchar(30)  not null, 
@@ -75,7 +75,7 @@ id integer(7) AUTO_INCREMENT,
 nomea varchar(20) not null, 
 dt_nasc date not null,
 idade integer(2) not null, 
-cpf_cliente varchar(12) not null, 
+cpf_cliente char(12) not null, 
 cod_raça integer(7) not null,
 primary key (id),
 foreign key(cpf_cliente) references CLIENTE(CPF),
@@ -84,27 +84,27 @@ CREATE TABLE SUBSTANCIA(
 cod integer(7) AUTO_INCREMENT,  
 descr varchar(70) not null,
 primary key (cod));
-CREATE TABLE PEDIDO_PRODUTO(
-cod varchar(10), 
-dia date not null, 
-v_total numeric(6,2) not null, 
-stats enum('confirmado', 'não finalizado', 'erro ao processar pedido') not null, 
-desconto numeric(6,2), 
-cpf_cliente varchar(12) not null,
-primary key (cod),
-check (v_total >0),
-foreign key(cpf_cliente) references CLIENTE(CPF));
 CREATE TABLE FATURA(
 cod varchar(10), 
 stats enum('pagamento confirmado', 'aguardando confirmação de pagamento', 'expirado') not null, 
 vl_total numeric(6,2) not null, 
 dt_venc date not null, 
-cod_pedido varchar(10) not null,
 primary key(cod),
-check (vl_total>0),
-foreign key(cod_pedido) references PEDIDO_PRODUTO(cod) ON DELETE CASCADE);
+check (vl_total>0));
+CREATE TABLE PEDIDO_PRODUTO(
+cod varchar(10), 
+cod_fat varchar(10),
+dia date not null, 
+v_total numeric(6,2) not null, 
+stats enum('confirmado', 'não finalizado', 'erro ao processar pedido') not null, 
+desconto numeric(6,2), 
+cpf_cliente char(12) not null,
+primary key (cod),
+check (v_total >0),
+foreign key(cod_fat) references FATURA(cod) ON DELETE CASCADE,
+foreign key(cpf_cliente) references CLIENTE(CPF));
 CREATE TABLE AGENDAMENTO(
-id varchar(16), 
+id int(16) AUTO_INCREMENT, 
 tipo_agendamento enum('PET', 'CLI', 'LAB') not null, 
 confirmado boolean default false, 
 foi_efetivado boolean default false, 
@@ -169,7 +169,7 @@ cod integer(2) AUTO_INCREMENT,
 descr varchar(30) not null,
 primary key (cod));
 CREATE TABLE PAGAMENTO(
-id varchar(10), 
+id int(16) AUTO_INCREMENT, 
 vl_total numeric(6,2) not null, 
 dt_pag date not null, 
 vl_multa numeric(6,2), 
@@ -217,22 +217,22 @@ check (valor_parcial>0),
 foreign key(cod_pedido) references PEDIDO_PRODUTO(cod) ON DELETE CASCADE,
 foreign key(cod_produto) references PRODUTO_REF(cod) ON DELETE CASCADE);
 CREATE TABLE REALIZA(
-cpf_cliente varchar(12), 
-cpf_func varchar(11), 
-id_agend varchar(10), 
+cpf_cliente char(12), 
+cpf_func char(11), 
+id_agend int(16) AUTO_INCREMENT, 
 data_marcada date not null,
 primary key (cpf_cliente, cpf_func, id_agend),
 foreign key(cpf_cliente) references CLIENTE(CPF),
 foreign key(cpf_func) references FUNCIONARIO(CPF),
 foreign key(id_agend) references AGENDAMENTO(id) ON DELETE CASCADE);
 CREATE TABLE POSSUI_HOR(
-CPF_func varchar(11), 
+CPF_func char(11), 
 id_horario integer(7),
 primary key (CPF_func, id_horario),
 foreign key(CPF_func) references FUNCIONARIO(CPF),
 foreign key(id_horario) references HORARIO(id));
 CREATE TABLE TEM_ESP(
-CPF_vet varchar(11), 
+CPF_vet char(11), 
 id_esp integer(7),
 primary key (CPF_vet, id_esp),
 foreign key(CPF_vet) references FUNCIONARIO(CPF),
@@ -245,24 +245,24 @@ foreign key(id_animal) references ANIMAL(id),
 foreign key(cod_substancia) references SUBSTANCIA(cod));
 CREATE TABLE ENVOLVE(
 id_animal integer(7),
-id_agend varchar(10),
+id_agend int(16) AUTO_INCREMENT,
 primary key (id_animal, id_agend),
 foreign key(id_animal) references ANIMAL(id),
 foreign key (id_agend) references AGENDAMENTO(id) ON DELETE CASCADE);
 CREATE TABLE ENVOLVE_AP(
-id_agendpet varchar(10), 
+id_agendpet int(16) AUTO_INCREMENT, 
 cod_servpet integer(7),
 primary key (id_agendpet, cod_servpet),
 foreign key(id_agendpet) references AGENDAMENTO(id) ON DELETE CASCADE,
 foreign key(cod_servpet) references SERVICO_PETSHOP(cod));
 CREATE TABLE ENVOLVE_AC(
-id_agendclin varchar(10), 
+id_agendclin int(16) AUTO_INCREMENT, 
 cod_servclin integer(7),
 primary key (id_agendclin, cod_servclin),
 foreign key(id_agendclin) references AGENDAMENTO(id) ON DELETE CASCADE,
 foreign key(cod_servclin) references SERVICO_CLINICA(cod));
 CREATE TABLE ENVOLVE_AL(
-id_agendlab varchar(10),
+id_agendlab int(16) AUTO_INCREMENT,
 cod_servlab integer(7),
 primary key (id_agendlab, cod_servlab),
 foreign key(id_agendlab) references AGENDAMENTO(id) ON DELETE CASCADE,

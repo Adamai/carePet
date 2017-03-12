@@ -475,39 +475,65 @@ INSERT INTO instancia(seq, cod_barra, dt_fabricacao, dt_validade, qtd_atual, id_
 ('66D9S', -1455910398, '2007-03-06', '2017-02-18', 20, 26);
 
 --
--- Inserting data into table pedido_produto
+-- Inserting data into table fatura
 --
-INSERT INTO pedido_produto(cod, dia, v_total, stats, desconto, cpf_cliente) VALUES
-('XW5RL0X', '2007-10-04', 236.14, 'não finalizado', 0.01, 504552305),
-('C3', '2009-12-10', 316.22, 'erro ao processar pedido', 22.02, 39534217),
-('8C4C3', '2005-06-07', 990, 'confirmado', NULL, 551789587),
-('S', '2011-09-14', 380.28, 'não finalizado', 17.02, 39534217),
-('6', '2009-03-12', 288.19, 'erro ao processar pedido', 0.39, 962569201),
-('O5', '2006-01-07', 106, 'confirmado', 41.04, 157852849),
-('EK904', '2005-06-28', 643.54, 'confirmado', 0.06, 157852849),
-('F70IP', '2005-09-21', 728.63, 'confirmado', 37.53, 130642302),
-('O3', '2008-09-10', 270.17, 'erro ao processar pedido', 52.05, 866147580),
-('294S', '2005-05-01', 585.49, 'erro ao processar pedido', 91.09, 911365695),
-('01R', '2015-02-12', 505.41, 'não finalizado', 42.25, 831803211),
-('9', '2009-04-03', 290, 'erro ao processar pedido', 74.07, 130642302),
-('I4A', '2006-04-23', 990, 'não finalizado', 27, 231270992),
-('R18YVSP6IW', '2010-08-15', 340.24, 'confirmado', 0.00, 664035705),
-('DE48M4', '2012-07-11', 410.31, 'confirmado', 53.05, 101286373),
-('8D', '2005-12-06', 804, 'confirmado', 77.08, 784185624),
-('36G', '2015-01-19', 502.40, 'confirmado', 53.05, 866147580),
-('R90I83', '2013-05-10', 440.34, 'não finalizado', 0.01, 676155285),
-('1', '2009-12-05', 315.22, 'erro ao processar pedido', 40.04, 784185624),
-('2', '2005-05-02', 586.49, 'erro ao processar pedido', 42.04, 977672342),
-('IJ287A730', '2012-07-29', 412.31, 'confirmado', 21.02, 130642302),
-('6R8T', '2005-04-23', 990, 'confirmado', 0.61, 977561704),
-('7AE', '2004-01-10', 990, 'confirmado', 92.16, 977561704),
-('144T2', '2014-06-10', 480.38, 'não finalizado', 123.12, 39534217),
-('3', '2013-05-17', 441, 'confirmado', 0.08, 664035705),
-('L', '2004-02-08', 990, 'confirmado', 28.03, 977561704),
-('4', '2015-01-24', 503.40, 'confirmado', 126.13, 310614841),
-('U3', '2013-01-12', 428.33, 'confirmado', 0.12, 831803211),
-('U8J', '2006-06-25', 189.91, 'não finalizado', NULL, 354312068),
-('C1', '2005-08-09', 990, 'não finalizado', NULL, 101286373);
+INSERT INTO fatura(cod, stats, vl_total, dt_venc) VALUES
+('I', 'expirado', 215.17, '2008-07-16'),
+('HZR', 'pagamento confirmado', 437.39, '2014-08-07'),
+('O05X', 'pagamento confirmado', 292.24, '2010-08-25'),
+('EOCT', 'aguardando confirmação de pagamento', 513.46, '2016-09-13'),
+('17O', 'pagamento confirmado', 105.56, '2005-07-10'),
+('2BS9F', 'expirado', 500, '2004-01-02'),
+('2080BGFRCS', 'expirado', 378.33, '2012-12-29'),
+('P', 'expirado', 414.36, '2013-12-21'),
+('EI6', 'aguardando confirmação de pagamento', 166.12, '2007-03-10'),
+('1W', 'expirado', 446.40, '2014-11-10'),
+('Q', 'aguardando confirmação de pagamento', 486, '2015-12-14'),
+('CD', 'pagamento confirmado', 461.41, '2015-04-10'),
+('YE9ZGW6NTF', 'aguardando confirmação de pagamento', 215.17, '2008-07-09'),
+('2315', 'aguardando confirmação de pagamento', 306.26, '2011-01-05'),
+('0', 'pagamento confirmado', 356.31, '2012-05-24'),
+('55G66E4186', 'pagamento confirmado', 196.94, '2009-05-23'),
+('M71', 'pagamento confirmado', 500, '2004-01-03'),
+('Z3', 'expirado', 282.23, '2010-05-17'),
+('5', 'pagamento confirmado', 348.30, '2012-03-05'),
+('RK6', 'aguardando confirmação de pagamento', 500, '2004-01-02'),
+('4O', 'aguardando confirmação de pagamento', 425.38, '2014-04-16'),
+('SR4Y', 'expirado', 259.21, '2009-09-30'),
+('H1M0', 'expirado', 312.26, '2011-03-08'),
+('1', 'pagamento confirmado', 209.16, '2008-05-12'),
+('69468', 'aguardando confirmação de pagamento', 199, '2008-02-01'),
+('YH28', 'pagamento confirmado', 162.11, '2007-01-28'),
+('4UPOM0NH', 'expirado', 111.61, '2005-09-06'),
+('FJ2', 'aguardando confirmação de pagamento', 202.15, '2008-03-01'),
+('261EV', 'aguardando confirmação de pagamento', 500, '2004-04-06'),
+('C8', 'pagamento confirmado', 107.58, '2005-07-31');
+
+--
+-- Inserting data into table pedido_produto
+-- COMPLETAR COD_FAT E REMOVER COD_pedido de fatura
+INSERT INTO pedido_produto(cod, dia, v_total, stats, desconto, cpf_cliente, cod_fat) VALUES
+('XW5RL0X', '2007-10-04', 236.14, 'não finalizado', 0.01, 504552305,'M71'),
+('C3', '2009-12-10', 316.22, 'erro ao processar pedido', 22.02, 39534217,'55G66E4186'),
+('8C4C3', '2005-06-07', 990, 'confirmado', NULL, 551789587,'FJ2'),
+('S', '2011-09-14', 380.28, 'não finalizado', 17.02, 39534217,'O05X'),
+('6', '2009-03-12', 288.19, 'erro ao processar pedido', 0.39, 962569201,'HZR'),
+('O3', '2008-09-10', 270.17, 'erro ao processar pedido', 52.05, 866147580,'C8'),
+('01R', '2015-02-12', 505.41, 'não finalizado', 42.25, 831803211,'5'),
+('9', '2009-04-03', 290, 'erro ao processar pedido', 74.07, 130642302,'Z3'),
+('I4A', '2006-04-23', 990, 'não finalizado', 27, 231270992,'Q'),
+('8D', '2005-12-06', 804, 'confirmado', 77.08, 784185624,'P'),
+('36G', '2015-01-19', 502.40, 'confirmado', 53.05, 866147580,'2080BGFRCS'),
+('1', '2009-12-05', 315.22, 'erro ao processar pedido', 40.04, 784185624,'YH28'),
+('2', '2005-05-02', 586.49, 'erro ao processar pedido', 42.04, 977672342,'261EV'),
+('6R8T', '2005-04-23', 990, 'confirmado', 0.61, 977561704,'RK6'),
+('7AE', '2004-01-10', 990, 'confirmado', 92.16, 977561704,'H1M0'),
+('144T2', '2014-06-10', 480.38, 'não finalizado', 123.12, 39534217,'69468'),
+('3', '2013-05-17', 441, 'confirmado', 0.08, 664035705,'EOCT'),
+('L', '2004-02-08', 990, 'confirmado', 28.03, 977561704,'1'),
+('U3', '2013-01-12', 428.33, 'confirmado', 0.12, 831803211,'4UPOM0NH'),
+('U8J', '2006-06-25', 189.91, 'não finalizado', NULL, 354312068,'I'),
+('C1', '2005-08-09', 990, 'não finalizado', NULL, 101286373,'SR4Y');
 
 --
 -- Inserting data into table servico
@@ -543,41 +569,6 @@ INSERT INTO servico(cod, obs, preco, dt_solicitacao, dt_realizacao, duracao, cod
 (2015476686, 'Nulla sed rerum quia, voluptas necessitatibus consequatur et ipsa illo', 444.41, '2015-05-05', '2015-05-05', 1, 1234324179),
 (1684754522, NULL, 581.55, '2005-07-05', '2005-07-06', 2, 429496733),
 (858993467, NULL, 265.24, '2010-06-12', '2010-08-10', 1, 261276589);
-
---
--- Inserting data into table fatura
---
-INSERT INTO fatura(cod, stats, vl_total, dt_venc, cod_pedido) VALUES
-('I', 'expirado', 215.17, '2008-07-16', 'U8J'),
-('HZR', 'pagamento confirmado', 437.39, '2014-08-07', '6'),
-('O05X', 'pagamento confirmado', 292.24, '2010-08-25', 'S'),
-('EOCT', 'aguardando confirmação de pagamento', 513.46, '2016-09-13', '3'),
-('17O', 'pagamento confirmado', 105.56, '2005-07-10', 'S'),
-('2BS9F', 'expirado', 500, '2004-01-02', '8D'),
-('2080BGFRCS', 'expirado', 378.33, '2012-12-29', '36G'),
-('P', 'expirado', 414.36, '2013-12-21', '8D'),
-('EI6', 'aguardando confirmação de pagamento', 166.12, '2007-03-10', 'U3'),
-('1W', 'expirado', 446.40, '2014-11-10', '2'),
-('Q', 'aguardando confirmação de pagamento', 486, '2015-12-14', 'I4A'),
-('CD', 'pagamento confirmado', 461.41, '2015-04-10', 'O3'),
-('YE9ZGW6NTF', 'aguardando confirmação de pagamento', 215.17, '2008-07-09', '6'),
-('2315', 'aguardando confirmação de pagamento', 306.26, '2011-01-05', 'O3'),
-('0', 'pagamento confirmado', 356.31, '2012-05-24', 'L'),
-('55G66E4186', 'pagamento confirmado', 196.94, '2009-05-23', 'C3'),
-('M71', 'pagamento confirmado', 500, '2004-01-03', 'XW5RL0X'),
-('Z3', 'expirado', 282.23, '2010-05-17', '9'),
-('5', 'pagamento confirmado', 348.30, '2012-03-05', '01R'),
-('RK6', 'aguardando confirmação de pagamento', 500, '2004-01-02', '6R8T'),
-('4O', 'aguardando confirmação de pagamento', 425.38, '2014-04-16', '1'),
-('SR4Y', 'expirado', 259.21, '2009-09-30', 'C1'),
-('H1M0', 'expirado', 312.26, '2011-03-08', '7AE'),
-('1', 'pagamento confirmado', 209.16, '2008-05-12', 'L'),
-('69468', 'aguardando confirmação de pagamento', 199, '2008-02-01', '144T2'),
-('YH28', 'pagamento confirmado', 162.11, '2007-01-28', '1'),
-('4UPOM0NH', 'expirado', 111.61, '2005-09-06', 'U3'),
-('FJ2', 'aguardando confirmação de pagamento', 202.15, '2008-03-01', '8C4C3'),
-('261EV', 'aguardando confirmação de pagamento', 500, '2004-04-06', '2'),
-('C8', 'pagamento confirmado', 107.58, '2005-07-31', 'O3');
 
 --
 -- Inserting data into table agendamento
@@ -618,6 +609,7 @@ INSERT INTO agendamento(id, tipo_agendamento, confirmado, foi_efetivado, foi_can
 -- Inserting data into table funcionario
 --
 INSERT INTO funcionario(CPF, email, dt_nasc, cidade, Nome, CEP, Logradouro, dt_admissao, cod_est, senha, CRMV, tipo_fun) VALUES
+(88290552, 'zef@hotmail.com', '1964-08-18', 'Raincife', 'Pall', '50000000', 'Rua dos bobos, nº 0', '2014-05-31', 604010902, 'pop', 'KKKL', 'Tecnico'),
 (2001503, 'Ahmad.Damron@example.com', '1974-10-01', 'Orangeville', 'Ahmad Damron', '53924', '2498 Monument Hwy, Fisher Bldg, Phoenix, AZ, 90717', '2014-05-31', 604010902, '2', 'ZJN2', 'Tecnico'),
 (107664856, 'Buster_Armstead81@nowhere.com', '1989-05-04', 'Rock Falls', 'Cary Abraham', '00545', '1614 Prospect Hill Highway, Penobscot Bldg, Annapolis, MD, 84611', '2009-05-27', 818759268, 'V0A72', 'GVA490', 'Tecnico'),
 (684492100, 'JasonXMcmullen1@example.com', '1970-01-02', 'Orbisonia', 'Romelia Osorio', '85311', '156 NW Woodland Cir, Atlanta, GA, 01174', '2011-02-20', 1922381589, 'K5PISG9', 'FY5', 'Tecnico'),
@@ -834,32 +826,22 @@ INSERT INTO delivery(id, horario, dia, stats, endereco, cod_pedido) VALUES
 ('97950', '17:59:9', '2012-11-08', 'entregue', '3009 W Hazelwood Road, Pierre, South Dakota, 56715', '7AE'),
 ('86520', '20:30:7', '2015-05-03', 'a caminho', '2803 6th Hwy, First Security Building, Santa Fe, New Mexico, 72776', 'I4A'),
 ('13003', '10:52:27', '2005-11-05', 'entregue', '98 New Stonewood Blvd, Cheyenne, WY, 20666', '1'),
-('50159', '15:47:42', '2010-09-12', 'entregue', '2885 3rd Road, Honolulu, HI, 53793', 'R90I83'),
 ('81715', '22:43:58', '2005-05-09', 'aguardando entregador', '3369 Social Way, Guardian Bldg, Dover, Delaware, 02995', 'U3'),
-('98531', '10:57:4', '2005-12-03', 'entregue', '2044 Highland Way, Equitable Building, Carson City, NV, 04369', 'R90I83'),
-('37253', '18:8:17', '2013-01-02', 'aguardando entregador', '893 NW Hope Lane, Suite 2173, Denver, Colorado, 25396', 'O5'),
-('43577', '10:38:8', '2005-08-11', 'entregue', '980 Rock Hill Court, Olympia, WA, 54242', 'F70IP'),
 ('27649', '17:51:31', '2012-09-24', 'entregue', '62 Hope Pkwy, Suite 6747, Raleigh, North Carolina, 10357', '01R'),
 ('95017', '12:17:9', '2007-03-28', 'a caminho', '478 North Stonewood Pkwy, Macy''s Building, Lincoln, NE, 70905', '36G'),
 ('44231', '15:15:40', '2010-03-03', 'entregue', '3355 Beachwood Blvd, Appartment 123, Augusta, Maine, 58955', 'C1'),
 ('89800', '9:0:2', '2004-01-02', 'entregue', '552 White Hope Blvd, Duke Energy Bldg, Cheyenne, Wyoming, 64531', '9'),
-('90207', '9:0:8', '2004-01-08', 'entregue', '3090 Riverside Blvd, Santa Fe, New Mexico, 20271', 'R90I83'),
 ('30468', '18:33:38', '2013-06-03', 'entregue', '758 Market Hwy, Richmond, Virginia, 78541', '2'),
-('24487', '9:0:49', '2004-02-18', 'entregue', '3897 Lake Rd, Carson City, Nevada, 57195', 'EK904'),
 ('14316', '9:0:6', '2004-01-06', 'entregue', '2057 Quailwood Way, Diamond Bldg, Columbia, South Carolina, 15387', '8C4C3'),
 ('48357', '11:54:32', '2006-11-13', 'entregue', '3948 NW Chapel Hill Lane, Oklahoma City, Oklahoma, 24963', '144T2'),
 ('85835', '13:55:52', '2008-11-10', 'entregue', '47 N Rushwood Ct, Suite 163, Sacramento, California, 11901', '8C4C3'),
 ('45567', '15:53:38', '2010-10-17', 'entregue', '3787 Oak Highway, Albany, NY, 08779', '6R8T'),
-('15665', '11:2:40', '2006-01-05', 'entregue', '305 Stonewood Highway, Concord, NH, 19370', 'R90I83'),
-('80325', '10:13:49', '2016-02-15', 'entregue', '740 White Hunting Hill Way, Buhl Bldg, Columbus, Ohio, 51284', 'R90I83'),
 ('99460', '9:0:4', '2004-01-04', 'entregue', '3266 46th Lane, Fisher Bldg, Annapolis, Maryland, 48602', '9'),
-('36646', '10:39:34', '2005-08-20', 'entregue', '57 Bayview Drive, Richmond, Virginia, 80866', '4'),
 ('17738', '18:39:57', '2013-07-11', 'aguardando entregador', '71 West Front Lane, Annapolis, Maryland, 47859', 'U3'),
 ('82113', '12:2:35', '2006-12-31', 'aguardando entregador', '1488 East Rose Hill Street, 1st Floor, Honolulu, Hawaii, 15473', '7AE'),
 ('79705', '23:31:59', '2005-06-07', 'entregue', '102 Hunting Hill Ln, Austin, TX, 46879', '2'),
 ('68667', '10:55:3', '2005-11-21', 'entregue', '3409 White Mountain Ct, Suite 56, Richmond, VA, 47036', 'U3'),
-('34197', '14:43:58', '2009-08-25', 'entregue', '3226 Ashwood Ct, Indianapolis, IN, 81284', '2'),
-('80231', '9:13:33', '2006-03-23', 'entregue', '988 Chapel Hill Hwy, Juneau, AK, 59541', '294S');
+('34197', '14:43:58', '2009-08-25', 'entregue', '3226 Ashwood Ct, Indianapolis, IN, 81284', '2');
 
 --
 -- Inserting data into table diagnostico
@@ -1117,28 +1099,19 @@ INSERT INTO item_produto(cod_pedido, cod_produto, seq, qtd, valor_parcial) VALUE
 ('6R8T', 468543260, 'E476R5DZ', 49, 588.49),
 ('U8J', 468543259, '98', 29, 380.28),
 ('O3', 468543257, 'U', 23, 326.23),
-('R90I83', 264308154, 'V8B', 26, 990),
 ('L', 892561605, '1', 6, 645.55),
 ('7AE', 1107309971, '2', 4, 990),
 ('6', 1107309970, 'MR', 31, 400.30),
-('DE48M4', 1288490795, 'Z92811', 7, 665.80),
-('4', 683291622, '2X1Y', 7, 725.63),
 ('C1', 1980953772, '242', 7, 784.69),
 ('C3', 683291623, '106U0', 23, 321.22),
 ('I4A', 1766205410, 'DOK0AC', 8, 820.72),
-('294S', 892561606, 'Q70', 13, 223.12),
-('O5', 683291624, 'A', 10, 195.97),
 ('8C4C3', 683291625, 'VF', 8, 845.75),
 ('1', 1503239160, '7OCYCK', 43, 523.42),
 ('8D', 468543256, '5417', 35, 444.35),
-('EK904', 2147483647, '0RL', 34, 429.33),
 ('2', 468543258, '5L', 10, 199.00),
 ('36G', 683291626, '855Y3369K9', 26, 350.25),
-('R18YVSP6IW', 1766205411, 'S44', 42, 513.41),
 ('S', 1503239161, '70Z6', 40, 492.39),
-('IJ287A730', 1980953773, '3EN4R', 24, 101),
 ('01R', 49559788, '3D1LRXV1JZ', 6, 672.57),
-('F70IP', 1288490796, '39', 45, 103),
 ('9', 1107309972, 'WI7KXVQ3', 6, 612.51);
 
 --
