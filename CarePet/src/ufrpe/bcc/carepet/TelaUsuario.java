@@ -66,7 +66,7 @@ public class TelaUsuario extends JFrame implements ActionListener {
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addComponent(btnCadastrarAgendamento)
 								.addComponent(btnCadastrarAnimal))))
-					.addContainerGap(215, Short.MAX_VALUE))
+					.addContainerGap(203, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -75,7 +75,7 @@ public class TelaUsuario extends JFrame implements ActionListener {
 					.addComponent(btnCadastrarAnimal)
 					.addGap(18)
 					.addComponent(btnCadastrarAgendamento)
-					.addPreferredGap(ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
 					.addComponent(btnVoltar))
 		);
 		contentPane.setLayout(gl_contentPane);

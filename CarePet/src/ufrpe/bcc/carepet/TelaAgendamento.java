@@ -83,7 +83,7 @@ static {
 		
 		Connection retorno = null;
 		retorno = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", "root", "kbrito"); // nome do esquema, usuário e senha
+				"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", "root", "paloma"); // nome do esquema, usuário e senha
 		return retorno;
 	}
 	
