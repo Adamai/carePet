@@ -48,7 +48,13 @@ public class TelaAgendamento extends JFrame implements ActionListener{
 	private Funcionario funcionario;
 	private JTextField textHoraF;
 	private JComboBox comboTipo;
-	private JTextField txtCodfat;
+	private JList list;
+	private JLabel lblMotivo;
+	private JTextField textCliMotivo;
+	private JTextField textLabNome;
+	private JTextField textLabTel;
+	private JLabel lblTelefone;
+	private JLabel lblNomeDoLa;
 
 	/**
 	 * Launch the application.
@@ -128,7 +134,7 @@ static {
 		
 		JLabel lblCpfCliente = new JLabel("CPF Cliente");
 		model = new DefaultListModel();
-		JList list = new JList(model);
+		list = new JList(model);
 		
 		btnCriarAgendamento = new JButton("Criar Agendamento");
 		
@@ -158,7 +164,7 @@ static {
 		JLabel lblPrice = new JLabel("Pre\u00E7o:");
 		
 		textPrice = new JTextField();
-		textPrice.setText("000,00");
+		textPrice.setText("000.00");
 		textPrice.setColumns(10);
 		
 		btnVoltar = new JButton("Voltar");
@@ -170,12 +176,20 @@ static {
 		textHoraF.setText("00:00");
 		textHoraF.setColumns(10);
 		
-		JLabel lblCodFat = new JLabel("C\u00F3digo da Fatura:");
+		lblMotivo = new JLabel("Motivo (Apenas para atendimento CLI)");
 		
-		txtCodfat = new JTextField();
-		txtCodfat.setColumns(10);
+		textCliMotivo = new JTextField();
+		textCliMotivo.setColumns(10);
 		
-		JLabel lblFatura = new JLabel("Fatura");
+		textLabNome = new JTextField();
+		textLabNome.setColumns(10);
+		
+		textLabTel = new JTextField();
+		textLabTel.setColumns(10);
+		
+		lblTelefone = new JLabel("Telefone:");
+		
+		lblNomeDoLa = new JLabel("Nome do Laborat\u00F3rio (LAB)");
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -190,79 +204,82 @@ static {
 					.addGap(39)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblFatura)
+							.addComponent(lblMotivo, GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+							.addGap(45)
+							.addComponent(lblNomeDoLa)
+							.addGap(440))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addContainerGap())
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-							.addGroup(gl_contentPane.createSequentialGroup()
-								.addComponent(lblCodFat)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(txtCodfat, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addGap(752))
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(lblPrice)
+							.addContainerGap())
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(lblObs)
+							.addContainerGap())
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(textObs)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addContainerGap())
-								.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_contentPane.createSequentialGroup()
-										.addComponent(lblPrice)
-										.addContainerGap())
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+											.addGroup(gl_contentPane.createSequentialGroup()
+												.addComponent(lblTipoDeAgendamento)
+												.addGap(34)
+												.addComponent(comboTipo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+											.addGroup(gl_contentPane.createSequentialGroup()
+												.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+													.addComponent(lblData)
+													.addComponent(lblHorario))
+												.addPreferredGap(ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+												.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+													.addGroup(gl_contentPane.createSequentialGroup()
+														.addComponent(textDia, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(textMes, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(textAno, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+													.addComponent(textHora, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+										.addComponent(lblTipoServ)
+										.addGroup(gl_contentPane.createSequentialGroup()
+											.addComponent(lblCodServ)
+											.addGap(18)
+											.addComponent(FieldCodServ, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 										.addGroup(gl_contentPane.createSequentialGroup()
-											.addComponent(lblObs)
-											.addContainerGap())
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btnChecarDescr))
 										.addGroup(gl_contentPane.createSequentialGroup()
-											.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
-												.addComponent(textObs)
-												.addGroup(gl_contentPane.createSequentialGroup()
-													.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-														.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-															.addGroup(gl_contentPane.createSequentialGroup()
-																.addComponent(lblTipoDeAgendamento)
-																.addGap(34)
-																.addComponent(comboTipo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-															.addGroup(gl_contentPane.createSequentialGroup()
-																.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-																	.addComponent(lblData)
-																	.addComponent(lblHorario))
-																.addPreferredGap(ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-																.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-																	.addGroup(gl_contentPane.createSequentialGroup()
-																		.addComponent(textDia, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(ComponentPlacement.RELATED)
-																		.addComponent(textMes, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(ComponentPlacement.RELATED)
-																		.addComponent(textAno, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-																	.addComponent(textHora, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-														.addComponent(lblTipoServ)
-														.addGroup(gl_contentPane.createSequentialGroup()
-															.addComponent(lblCodServ)
-															.addGap(18)
-															.addComponent(FieldCodServ, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-													.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-														.addGroup(gl_contentPane.createSequentialGroup()
-															.addPreferredGap(ComponentPlacement.RELATED)
-															.addComponent(btnChecarDescr))
-														.addGroup(gl_contentPane.createSequentialGroup()
-															.addGap(33)
-															.addComponent(lblHorarioF)
-															.addPreferredGap(ComponentPlacement.RELATED)
-															.addComponent(textHoraF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-												.addComponent(txtrDescrip, GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
-											.addPreferredGap(ComponentPlacement.RELATED, 249, Short.MAX_VALUE)
-											.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-												.addGroup(gl_contentPane.createSequentialGroup()
-													.addComponent(lblCpfCliente)
-													.addPreferredGap(ComponentPlacement.RELATED)
-													.addComponent(FieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-												.addGroup(gl_contentPane.createSequentialGroup()
-													.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
-														.addComponent(btnCriarAgendamento, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-														.addComponent(list, GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
-													.addContainerGap())
-												.addGroup(gl_contentPane.createSequentialGroup()
-													.addGap(10)
-													.addComponent(btnConsultarAnimais, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-													.addContainerGap())))))))))
+											.addGap(33)
+											.addComponent(lblHorarioF)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(textHoraF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+								.addComponent(txtrDescrip, GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED, 249, Short.MAX_VALUE)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addComponent(lblCpfCliente)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(FieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(btnCriarAgendamento, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(list, GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
+									.addContainerGap())
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addGap(10)
+									.addComponent(btnConsultarAnimais, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addContainerGap())))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(textCliMotivo, GroupLayout.PREFERRED_SIZE, 307, GroupLayout.PREFERRED_SIZE)
+							.addGap(112)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+								.addComponent(textLabNome, GroupLayout.PREFERRED_SIZE, 239, GroupLayout.PREFERRED_SIZE)
+								.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+									.addComponent(lblTelefone)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(textLabTel)))
+							.addGap(377))))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -316,14 +333,23 @@ static {
 					.addComponent(lblPrice)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(30)
-					.addComponent(lblFatura)
-					.addGap(18)
+					.addGap(33)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblCodFat)
-						.addComponent(txtCodfat, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
-					.addComponent(btnVoltar))
+						.addComponent(lblMotivo)
+						.addComponent(lblNomeDoLa))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(textCliMotivo, GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnVoltar))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(textLabNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textLabTel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblTelefone))
+							.addContainerGap())))
 		);
 		contentPane.setLayout(gl_contentPane);
 	}
@@ -376,18 +402,32 @@ static {
 			try{
 				Connection conec = getConexao();
 				Statement cadastrarST = conec.createStatement();
-				cadastrarST.execute("INSERT INTO fatura(cod, stats, vl_total, dt_vencimento)"
+				cadastrarST.execute("INSERT INTO fatura(stats, vl_total, dt_vencimento) VALUES("
+						+ "'aguardando confirmação de pagamento',"+textPrice.getText()+",DATE_ADD(now() , INTERVAL 7 DAY));");
 						
-						+
-						"INSERT INTO agendamento(tipo_agendamento,hora_inicio,hora_fim,dt_agenda,cod_fatura) VALUES('"
+						
+				cadastrarST.execute("INSERT INTO agendamento(tipo_agendamento,hora_inicio,hora_fim,dt_agenda) VALUES('"
 						+ comboTipo.getSelectedItem()+"',STR_TO_DATE('"+textHora.getText()+"', '%h:%i'),STR_TO_DATE('"+
-						textHoraF.getText()+"', '%h:%i'),now(),'"+txtCodfat.getText()+"');"+
+						textHoraF.getText()+"', '%h:%i'),now());"+
 						
 						"INSERT INTO realiza(cpf_cliente,cpf_func,data_marcada) VALUES("+FieldCPF.getText()+","+
-						funcionario.getCPF()+",now());" +
-						
-						"INSERT INTO envolve(id_animal, id_agend) VALUES("+
-						");");						
+						funcionario.getCPF()+",now());"						
+						);
+				
+				Statement busca = conec.createStatement();
+				ResultSet rbusca = busca.executeQuery("SELECT * FROM agendamento WHERE hora_inicio=STR_TO_DATE('"+textHora.getText()+"', '%h:%i')"
+						+ "AND hora_fim=STR_TO_DATE('"+textHoraF.getText()+"', '%h:%i') AND tipo_agendamento="+ comboTipo.getSelectedItem()+
+						" AND dt_agenda=now() LIMIT 1;");
+				rbusca.next();
+				String idagen = rbusca.getString("id");
+				rbusca = busca.executeQuery("SELECT * FROM animal WHERE nomea='"+list.getSelectedValue().toString()+
+						"' and cpf_cliente="+FieldCPF.getText()+";");
+				rbusca.next();
+				String idani = rbusca.getString("id");
+				//pegar idagend do agendamento feito e usar para inserir em o envolve
+				
+				cadastrarST.executeQuery("INSERT INTO envolve(id_animal, id_agend) VALUES("+idani+","+idagen+
+						");");
 				if(comboTipo.equals("CLI")){
 					
 				} else if (comboTipo.equals("PET")){
@@ -395,6 +435,9 @@ static {
 				} else{//LAB
 					
 				}
+				cadastrarST.close();
+				busca.close();
+				conec.close();
 			}catch (SQLException e) {
 				System.out.println("Houve erro no cadastro do agendamento");
 				e.printStackTrace();

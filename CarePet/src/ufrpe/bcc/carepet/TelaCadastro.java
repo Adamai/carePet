@@ -34,6 +34,8 @@ public class TelaCadastro extends JFrame implements ActionListener{
 	private JButton btnCadastrar;
 	private JButton btnVoltar;
 	private JPasswordField txtSenha;
+	private JTextField textTel;
+	private JTextField textCel;
 	
 	/**
 	 * Launch the application.
@@ -131,6 +133,20 @@ public static Connection getConexao() throws SQLException {
 		txtSenha = new JPasswordField();
 		txtSenha.setText("senha");
 		
+		JLabel lblTelefone = new JLabel("Telefone:");
+		
+		JLabel lblCelular = new JLabel("Celular:");
+		
+		textTel = new JTextField();
+		textTel.setText("8133333333");
+		textTel.setColumns(10);
+		
+		textCel = new JTextField();
+		textCel.setText("61987654321");
+		textCel.setColumns(10);
+		
+		JLabel lbldddtelefoneInserirApenas = new JLabel("(DDD+Telefone inserir apenas n\u00FAmeros)");
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -184,6 +200,20 @@ public static Connection getConexao() throws SQLException {
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addComponent(btnVoltar)
 					.addContainerGap(535, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+							.addComponent(lblCelular)
+							.addGap(18)
+							.addComponent(textCel))
+						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+							.addComponent(lblTelefone)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(textTel, GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)))
+					.addGap(18)
+					.addComponent(lbldddtelefoneInserirApenas)
+					.addContainerGap(212, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -222,7 +252,16 @@ public static Connection getConexao() throws SQLException {
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblSenha)
 								.addComponent(txtSenha, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED, 104, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblTelefone)
+								.addComponent(textTel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lbldddtelefoneInserirApenas))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblCelular)
+								.addComponent(textCel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED, 61, Short.MAX_VALUE))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnCadastrar)))
@@ -242,12 +281,16 @@ public static Connection getConexao() throws SQLException {
 			try{
 				Connection conec = getConexao();
 				Statement cadastrarST = conec.createStatement();
-				cadastrarST.execute(
-						"INSERT INTO CLIENTE(CPF,email,dt_nasc,cidade,nome,CEP,Logradouro,senha) VALUES ('"
+				cadastrarST.execute("INSERT INTO CLIENTE(CPF,email,dt_nasc,cidade,nome,CEP,Logradouro,senha) VALUES ('"
 						+txtCpf.getText()+"','"+txtEmail.getText()+"',STR_TO_DATE('"+txtDdmmaaaa.getText()+"', '%d/%m/%Y'),'"+txtCidade.getText()+"','"
-						+txtNome.getText()+"','"+txtCep.getText()+"','"+txtLogradouro.getText()+"','"+String.valueOf(txtSenha.getPassword())+"');"
+						+txtNome.getText()+"','"+txtCep.getText()+"','"+txtLogradouro.getText()+"','"+String.valueOf(txtSenha.getPassword())+"');");
+				cadastrarST.execute("INSERT INTO TELEFONES(cpf_cl,fone) VALUES ('"+txtCpf.getText()+"',"+textTel.getText()+");"
 						);
+				if(textCel.getText().length()>=9 && textCel.getText().length()<=11){
+					cadastrarST.execute("INSERT INTO TELEFONES(cpf_cl,fone) VALUES ('"+txtCpf.getText()+"',"+textCel.getText()+");");
+				}
 				JOptionPane.showMessageDialog(null, "Usuario Cadastrado\nFavor fazer login");
+						
 				dispose();
 				cadastrarST.close();
 				conec.close();

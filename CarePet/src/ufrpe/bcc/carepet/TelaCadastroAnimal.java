@@ -370,7 +370,7 @@ static {
 				cadastrarST.execute("INSERT INTO animal(nomea,dt_nasc,idade,cpf_cliente,cod_raça) VALUES ('"
 						+txtNome.getText()+"',STR_TO_DATE('"+txtDdmmaaaa.getText()+"', '%d/%m/%Y'),"+idade+",'"+usuario.getCPF()+
 						"',"+descrRS.getString("cod")+");");
-				if(listaAler.getElementAt(0) != null){
+				if(!listaAler.isEmpty()){
 					for(int i=0; i<listaAler.size();i++){
 					query = "SELECT * FROM animal WHERE nomea = '"+txtNome.getText()+"' AND cpf_cliente = '"+usuario.getCPF()+
 							"' AND dt_nasc=STR_TO_DATE('"+txtDdmmaaaa.getText()+"', '%d/%m/%Y') LIMIT 1;";

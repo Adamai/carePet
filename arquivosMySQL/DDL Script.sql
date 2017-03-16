@@ -35,7 +35,7 @@ confirmado boolean default false,
 primary key (CPF));
 CREATE TABLE TELEFONES(
 cpf_cl char(12), 
-fone integer(11) not null,
+fone bigint(11) not null,
 primary key (cpf_cl, fone),
 foreign key (cpf_cl) references CLIENTE (CPF));
 CREATE TABLE FUNCIONARIO(
@@ -78,14 +78,14 @@ idade integer(2) not null,
 cpf_cliente char(12) not null, 
 cod_raça integer(7) not null,
 primary key (id),
-foreign key(cpf_cliente) references CLIENTE(CPF),
+foreign key(cpf_cliente) references CLIENTE(CPF) ON DELETE CASCADE,
 foreign key(cod_raça) references RAÇA (cod));
 CREATE TABLE SUBSTANCIA(
 cod integer(7) AUTO_INCREMENT,  
 descr varchar(70) not null,
 primary key (cod));
 CREATE TABLE FATURA(
-cod varchar(10), 
+cod bigint(10) auto_increment, 
 stats enum('pagamento confirmado', 'aguardando confirmação de pagamento', 'expirado') not null, 
 vl_total numeric(6,2) not null, 
 dt_venc date not null, 
@@ -93,7 +93,7 @@ primary key(cod),
 check (vl_total>0));
 CREATE TABLE PEDIDO_PRODUTO(
 cod varchar(10), 
-cod_fat varchar(10),
+cod_fat bigint(10),
 dia date not null, 
 v_total numeric(6,2) not null, 
 stats enum('confirmado', 'não finalizado', 'erro ao processar pedido') not null, 
@@ -112,7 +112,7 @@ foi_cancelado boolean default false,
 hora_fim time not null, 
 hora_inicio time not null, 
 dt_agenda date not null, 
-cod_fatura varchar(10) not null,
+cod_fatura bigint(10) not null,
 primary key (id),
 foreign key(cod_fatura) references FATURA(cod) ON DELETE CASCADE);
 CREATE TABLE TIPO_SERVICO(
@@ -138,7 +138,7 @@ foreign key(cod) references SERVICO(cod) ON DELETE CASCADE);
 CREATE TABLE SERVICO_CLINICA(
 cod integer(7), 
 motivo varchar(70) not null, 
-resultado varchar(70) not null,
+resultado varchar(70) not null default 'Não Divulgado',
 primary key (cod),
 foreign key(cod) references SERVICO(cod) ON DELETE CASCADE);
 CREATE TABLE LABORATORIAL(
@@ -173,7 +173,7 @@ id int(16) AUTO_INCREMENT,
 vl_total numeric(6,2) not null, 
 dt_pag date not null, 
 vl_multa numeric(6,2), 
-cod_fat varchar(10) not null, 
+cod_fat bigint(10) not null, 
 cod_forma integer(2) not null,
 primary key(id),
 check (vl_total>0),
