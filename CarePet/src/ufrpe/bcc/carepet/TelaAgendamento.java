@@ -402,22 +402,21 @@ static {
 			try{
 				Connection conec = getConexao();
 				Statement cadastrarST = conec.createStatement();
-				cadastrarST.execute("INSERT INTO fatura(stats, vl_total, dt_vencimento) VALUES("
+				cadastrarST.execute("INSERT INTO fatura(stats, vl_total, dt_venc) VALUES("
 						+ "'aguardando confirmação de pagamento',"+textPrice.getText()+",DATE_ADD(now() , INTERVAL 7 DAY));");
+				ResultSet rscodfat = cadastrarST.executeQuery("SELECT * FROM fatura where stats='aguardando confirmação de pagamento'"
+						+ " AND vl_total="+textPrice.getText()+" ORDER BY 'cod' DESC LIMIT 1;");		
+				rscodfat.next();
+				cadastrarST.execute("INSERT INTO agendamento(tipo_agendamento,hora_inicio,hora_fim,dt_agenda,cod_fatura) VALUES('"
+						+ comboTipo.getSelectedItem()+"',STR_TO_DATE('"+textHora.getText()+"', '%k:%i'),STR_TO_DATE('"+
+						textHoraF.getText()+"', '%k:%i'),now(),"+rscodfat.getString("cod")+");"); //ERRO NO COD WTF
 						
-						
-				cadastrarST.execute("INSERT INTO agendamento(tipo_agendamento,hora_inicio,hora_fim,dt_agenda) VALUES('"
-						+ comboTipo.getSelectedItem()+"',STR_TO_DATE('"+textHora.getText()+"', '%h:%i'),STR_TO_DATE('"+
-						textHoraF.getText()+"', '%h:%i'),now());"+
-						
-						"INSERT INTO realiza(cpf_cliente,cpf_func,data_marcada) VALUES("+FieldCPF.getText()+","+
-						funcionario.getCPF()+",now());"						
+				cadastrarST.execute("INSERT INTO realiza(cpf_cliente,cpf_func,data_marcada) VALUES('"+FieldCPF.getText()+"','"+
+						funcionario.getCPF()+"',NOW());"						
 						);
 				
 				Statement busca = conec.createStatement();
-				ResultSet rbusca = busca.executeQuery("SELECT * FROM agendamento WHERE hora_inicio=STR_TO_DATE('"+textHora.getText()+"', '%h:%i')"
-						+ "AND hora_fim=STR_TO_DATE('"+textHoraF.getText()+"', '%h:%i') AND tipo_agendamento="+ comboTipo.getSelectedItem()+
-						" AND dt_agenda=now() LIMIT 1;");
+				ResultSet rbusca = busca.executeQuery("SELECT * FROM agendamento ORDER BY 'id' DESC LIMIT 1;");
 				rbusca.next();
 				String idagen = rbusca.getString("id");
 				rbusca = busca.executeQuery("SELECT * FROM animal WHERE nomea='"+list.getSelectedValue().toString()+
@@ -426,8 +425,7 @@ static {
 				String idani = rbusca.getString("id");
 				//pegar idagend do agendamento feito e usar para inserir em o envolve
 				
-				cadastrarST.executeQuery("INSERT INTO envolve(id_animal, id_agend) VALUES("+idani+","+idagen+
-						");");
+				cadastrarST.execute("INSERT INTO envolve(id_animal, id_agend) VALUES("+idani+","+idagen+");");
 				if(comboTipo.equals("CLI")){
 					
 				} else if (comboTipo.equals("PET")){
@@ -435,6 +433,8 @@ static {
 				} else{//LAB
 					
 				}
+				rscodfat.close();
+				rbusca.close();
 				cadastrarST.close();
 				busca.close();
 				conec.close();
