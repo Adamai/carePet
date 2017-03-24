@@ -34,6 +34,8 @@ public class TelaFuncionario extends JFrame implements ActionListener{
 	private Funcionario func;
 	private JButton btnVoltar;
 	private JButton btnCadastrarAgendamento;
+	private JButton btnListaClienteagendamentos;
+	private JButton btnCadastrar;
 	
 static {
 		
@@ -56,7 +58,7 @@ static {
 		this.func = func;
 		setTitle("CarePet - Seja Bem-Vindo!");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 400);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -93,35 +95,41 @@ static {
 		
 		btnCadastrarAgendamento = new JButton("Cadastrar Agendamento");
 		btnCadastrarAgendamento.addActionListener(this);
+		
+		btnListaClienteagendamentos = new JButton("Lista Cliente-Agendamentos");
+		btnListaClienteagendamentos.addActionListener(this);
+		
+		btnCadastrar = new JButton("Cadastrar Cliente");
+		btnCadastrar.addActionListener(this);
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(btnVoltar))
+						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(39)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-										.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-											.addComponent(btnPesquisarCliente, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-											.addComponent(btnProduto, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-											.addComponent(btnConfirmarCliente, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-										.addGroup(gl_contentPane.createSequentialGroup()
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnCadastrarAgendamento)))
-									.addGap(46)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(btnCadastrarAgendamento, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnPesquisarCliente, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnProduto, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnConfirmarCliente, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnListaClienteagendamentos, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnCadastrar, GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
+									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 										.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 											.addComponent(txtCpfCliente, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 											.addComponent(txtProduto, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 											.addComponent(txtCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 										.addComponent(lblFuncpos)))
-								.addComponent(lblLogado)))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btnVoltar)))
-					.addContainerGap(147, Short.MAX_VALUE))
+								.addComponent(lblLogado))))
+					.addGap(86))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -143,7 +151,11 @@ static {
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnPesquisarCliente)
 						.addComponent(txtCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnListaClienteagendamentos)
+					.addGap(18)
+					.addComponent(btnCadastrar)
+					.addPreferredGap(ComponentPlacement.RELATED, 86, Short.MAX_VALUE)
 					.addComponent(btnVoltar)
 					.addContainerGap())
 		);
@@ -152,6 +164,21 @@ static {
 	}
 	
 	public void actionPerformed(ActionEvent evento){
+		if(evento.getSource().equals(btnCadastrar)){
+			dispose();
+			TelaCadastro tela = new TelaCadastro(func);
+			tela.setVisible(true);
+		}
+		if(evento.getSource().equals(btnListaClienteagendamentos)){
+			if(func.getTipofunc().equals("Tecnico")){
+				dispose();
+				TelaListaAgendamento tela = new TelaListaAgendamento(func);
+				tela.setVisible(true);
+				}
+				else
+					JOptionPane.showMessageDialog(null, "É necessário ser um Funcionario Técnico");
+			
+		}
 		if(evento.getSource().equals(btnPesquisarCliente)){
 			
 		}

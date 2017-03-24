@@ -36,6 +36,7 @@ public class TelaCadastro extends JFrame implements ActionListener{
 	private JPasswordField txtSenha;
 	private JTextField textTel;
 	private JTextField textCel;
+	private Funcionario func;
 	
 	/**
 	 * Launch the application.
@@ -73,7 +74,8 @@ public static Connection getConexao() throws SQLException {
 	return retorno;
 }
 	
-	public TelaCadastro() {
+	public TelaCadastro(Funcionario funcionario) {
+		func = funcionario;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 500, 400);
 		contentPane = new JPanel();
@@ -274,7 +276,7 @@ public static Connection getConexao() throws SQLException {
 	public void actionPerformed(ActionEvent evento){
 		if(evento.getSource().equals(btnVoltar)){
 			dispose();
-			TelaLogin tela = new TelaLogin();
+			TelaFuncionario tela = new TelaFuncionario(func);
 			tela.setVisible(true);
 		}
 		if(evento.getSource().equals(btnCadastrar)){

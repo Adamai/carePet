@@ -10,10 +10,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -25,6 +29,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 
 public class TelaAgendamento extends JFrame implements ActionListener{
 
@@ -37,7 +42,7 @@ public class TelaAgendamento extends JFrame implements ActionListener{
 	private JButton btnCriarAgendamento;
 	private JButton btnConsultarAnimais;
 	private JTextField FieldCodServ;
-	private JButton btnChecarDescr;
+	private JButton btnChecarServ;
 	private JTextArea txtrDescrip;
 	private JLabel lblTipoServ;
 	private ResultSet rsTipoServ;
@@ -55,6 +60,9 @@ public class TelaAgendamento extends JFrame implements ActionListener{
 	private JTextField textLabTel;
 	private JLabel lblTelefone;
 	private JLabel lblNomeDoLa;
+	private JScrollPane scrollPane;
+	private JList listCli = new JList();
+	private DefaultListModel modelCl = new DefaultListModel();
 
 	/**
 	 * Launch the application.
@@ -97,16 +105,79 @@ static {
 		funcionario = func;
 		setTitle("CarePet - Agendamento");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1100, 600);
+		setBounds(100, 100, 1100, 650);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
 		JLabel lblLogadoComo = new JLabel("Logado como: "+func.getNome());
 		
+		int ilista = 0;
+		try{
+			Connection conex = getConexao();
+			String query = "	SELECT * FROM cliente;";
+			PreparedStatement psGetCli = conex.prepareStatement(query);
+			ResultSet rsGetCli = psGetCli.executeQuery();
+			while(rsGetCli.next()){
+				modelCl.addElement(rsGetCli.getString("nome"));
+				ilista++;
+			}
+			psGetCli.close();
+			conex.close();
+		} catch (SQLException e) {
+			System.out.println("Houve erro");
+			e.printStackTrace();
+		}
+		if(ilista!=0)
+			listCli.setModel(modelCl);
+		
+		listCli.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) { 
+				try{
+	      			Connection conex = getConexao();
+	      			PreparedStatement pscpf = conex.prepareStatement("SELECT CPF FROM cliente where nome='"+listCli.getSelectedValue().toString()+"';");
+	      			ResultSet rscpf = pscpf.executeQuery();
+	      			rscpf.next();
+	      			FieldCPF.setText(rscpf.getString("CPF"));
+				} catch (SQLException e) {
+	      			System.out.println("Houve erro");
+	      			e.printStackTrace();
+	      		}
+	        }
+		});
+		
+    	
 		String[] TiposAtend = {"CLI", "LAB", "PET"};
 		comboTipo = new JComboBox(TiposAtend);
-
+		comboTipo.addActionListener (new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+		        if(comboTipo.getSelectedItem().toString()=="CLI"){
+		        	textCliMotivo.setVisible(true);
+		        	lblMotivo.setVisible(true);
+		        	lblNomeDoLa.setVisible(false);
+		        	textLabNome.setVisible(false);
+		        	lblTelefone.setVisible(false);
+		        	textLabTel.setVisible(false);
+		        }
+		        if(comboTipo.getSelectedItem().toString()=="LAB"){
+		        	textCliMotivo.setVisible(false);
+		        	lblMotivo.setVisible(false);
+		        	lblNomeDoLa.setVisible(true);
+		        	textLabNome.setVisible(true);
+		        	lblTelefone.setVisible(true);
+		        	textLabTel.setVisible(true);
+		        }
+		        if(comboTipo.getSelectedItem().toString()=="PET"){
+		        	textCliMotivo.setVisible(false);
+		        	lblMotivo.setVisible(false);
+		        	lblNomeDoLa.setVisible(false);
+		        	textLabNome.setVisible(false);
+		        	lblTelefone.setVisible(false);
+		        	textLabTel.setVisible(false);
+		        }
+		    }
+		});
 		
 		comboTipo.setToolTipText("Tipo do Agendamento");
 		
@@ -153,8 +224,8 @@ static {
 		txtrDescrip = new JTextArea();
 		txtrDescrip.setText("Descri\u00E7\u00E3o");
 		
-		btnChecarDescr = new JButton("Checar Descr.");
-		btnChecarDescr.addActionListener(this);
+		btnChecarServ = new JButton("Checar Servi\u00E7os");
+		btnChecarServ.addActionListener(this);
 		
 		JLabel lblObs = new JLabel("Obs:");
 		
@@ -191,6 +262,8 @@ static {
 		
 		lblNomeDoLa = new JLabel("Nome do Laborat\u00F3rio (LAB)");
 		
+		scrollPane = new JScrollPane();
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -204,82 +277,83 @@ static {
 					.addGap(39)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblMotivo, GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
-							.addGap(45)
-							.addComponent(lblNomeDoLa)
-							.addGap(440))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(lblMotivo, GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
+							.addGap(475)
+							.addComponent(btnCriarAgendamento, GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
 							.addContainerGap())
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblPrice)
-							.addContainerGap())
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblObs)
-							.addContainerGap())
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(textObs)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-										.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-											.addGroup(gl_contentPane.createSequentialGroup()
-												.addComponent(lblTipoDeAgendamento)
-												.addGap(34)
-												.addComponent(comboTipo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-											.addGroup(gl_contentPane.createSequentialGroup()
-												.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-													.addComponent(lblData)
-													.addComponent(lblHorario))
-												.addPreferredGap(ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-												.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-													.addGroup(gl_contentPane.createSequentialGroup()
-														.addComponent(textDia, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-														.addPreferredGap(ComponentPlacement.RELATED)
-														.addComponent(textMes, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-														.addPreferredGap(ComponentPlacement.RELATED)
-														.addComponent(textAno, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-													.addComponent(textHora, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-										.addComponent(lblTipoServ)
-										.addGroup(gl_contentPane.createSequentialGroup()
-											.addComponent(lblCodServ)
-											.addGap(18)
-											.addComponent(FieldCodServ, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-										.addGroup(gl_contentPane.createSequentialGroup()
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnChecarDescr))
-										.addGroup(gl_contentPane.createSequentialGroup()
-											.addGap(33)
-											.addComponent(lblHorarioF)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(textHoraF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-								.addComponent(txtrDescrip, GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED, 249, Short.MAX_VALUE)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(lblCpfCliente)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(FieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(btnCriarAgendamento, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(list, GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
-									.addContainerGap())
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addGap(10)
-									.addComponent(btnConsultarAnimais, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addContainerGap())))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(textCliMotivo, GroupLayout.PREFERRED_SIZE, 307, GroupLayout.PREFERRED_SIZE)
-							.addGap(112)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(textLabNome, GroupLayout.PREFERRED_SIZE, 239, GroupLayout.PREFERRED_SIZE)
-								.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
-									.addComponent(lblTelefone)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(textLabTel)))
-							.addGap(377))))
+							.addGap(18)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblNomeDoLa)
+								.addComponent(lblTelefone))
+							.addGap(18)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addComponent(textLabTel, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE)
+								.addComponent(textLabNome, GroupLayout.PREFERRED_SIZE, 239, GroupLayout.PREFERRED_SIZE))
+							.addContainerGap(324, Short.MAX_VALUE))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+									.addComponent(textObs)
+									.addGroup(gl_contentPane.createSequentialGroup()
+										.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+											.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+												.addGroup(gl_contentPane.createSequentialGroup()
+													.addComponent(lblTipoDeAgendamento)
+													.addGap(34)
+													.addComponent(comboTipo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+												.addGroup(gl_contentPane.createSequentialGroup()
+													.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+														.addComponent(lblData)
+														.addComponent(lblHorario))
+													.addPreferredGap(ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+													.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+														.addGroup(gl_contentPane.createSequentialGroup()
+															.addComponent(textDia, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+															.addPreferredGap(ComponentPlacement.RELATED)
+															.addComponent(textMes, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+															.addPreferredGap(ComponentPlacement.RELATED)
+															.addComponent(textAno, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+														.addComponent(textHora, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+											.addComponent(lblTipoServ)
+											.addGroup(gl_contentPane.createSequentialGroup()
+												.addComponent(lblCodServ)
+												.addGap(18)
+												.addComponent(FieldCodServ, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+										.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+											.addGroup(gl_contentPane.createSequentialGroup()
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(btnChecarServ))
+											.addGroup(gl_contentPane.createSequentialGroup()
+												.addGap(33)
+												.addComponent(lblHorarioF)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(textHoraF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+									.addComponent(txtrDescrip, GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
+								.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblPrice)
+								.addComponent(lblObs))
+							.addPreferredGap(ComponentPlacement.RELATED, 136, Short.MAX_VALUE)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+									.addGap(23)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+										.addGroup(gl_contentPane.createSequentialGroup()
+											.addComponent(list, GroupLayout.PREFERRED_SIZE, 207, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(ComponentPlacement.RELATED))
+										.addGroup(gl_contentPane.createSequentialGroup()
+											.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+												.addGroup(gl_contentPane.createSequentialGroup()
+													.addComponent(lblCpfCliente)
+													.addGap(18)
+													.addComponent(FieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+												.addComponent(btnConsultarAnimais))
+											.addGap(56)))
+									.addGap(10))
+								.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+									.addGap(55))))))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -289,10 +363,9 @@ static {
 					.addGap(18)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(comboTipo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblTipoDeAgendamento)
-						.addComponent(FieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblCpfCliente))
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblTipoDeAgendamento))
+					.addGap(3)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(18)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
@@ -312,61 +385,96 @@ static {
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(FieldCodServ, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(lblCodServ)
-								.addComponent(btnChecarDescr)))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(6)
-							.addComponent(btnConsultarAnimais)
-							.addGap(13)
-							.addComponent(list, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)))
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(15)
-							.addComponent(btnCriarAgendamento))
-						.addGroup(gl_contentPane.createSequentialGroup()
+								.addComponent(btnChecarServ))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(txtrDescrip, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(lblObs)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(textObs, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblPrice)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(33)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblMotivo)
-						.addComponent(lblNomeDoLa))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+							.addComponent(txtrDescrip, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblObs)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(textObs, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblPrice)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(textCliMotivo, GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+							.addGap(118)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(FieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblCpfCliente))
+							.addGap(15)
+							.addComponent(btnConsultarAnimais)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(list, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(33)
+							.addComponent(lblMotivo)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textCliMotivo, GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addGap(55)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+										.addComponent(lblNomeDoLa)
+										.addComponent(textLabNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addPreferredGap(ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+										.addComponent(textLabTel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblTelefone))))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnVoltar))
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(textLabNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(textLabTel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblTelefone))
-							.addContainerGap())))
+							.addGap(14)
+							.addComponent(btnCriarAgendamento)
+							.addGap(162))))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(31)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(382, Short.MAX_VALUE))
 		);
+		
+		
+		scrollPane.setViewportView(listCli);
 		contentPane.setLayout(gl_contentPane);
+    	lblNomeDoLa.setVisible(false);
+    	textLabNome.setVisible(false);
+    	lblTelefone.setVisible(false);
+    	textLabTel.setVisible(false);
 	}
 	
 	public void actionPerformed(ActionEvent evento){
-		if(evento.getSource().equals(btnChecarDescr)){
+		if(evento.getSource().equals(btnChecarServ)){
 			try{
 				Connection conex = getConexao();
-				String query = "SELECT * FROM tipo_servico WHERE cod = '"+FieldCodServ.getText()+"' LIMIT 1";
+				
+				PreparedStatement psgetserv = conex.prepareStatement("SELECT * FROM tipo_servico;");
+				ResultSet rsgetserv = psgetserv.executeQuery();
+				ArrayList tservico = new ArrayList();
+				String[] service = {};
+				while(rsgetserv.next()){
+					tservico.add(rsgetserv.getString("descr"));
+				}
+				if(tservico!=null){
+					service = new String[tservico.size()];
+					tservico.toArray(service);
+				}
+				String opcoes = (String) JOptionPane.showInputDialog(null, "Tipos:", "Escolha o serviço", JOptionPane.QUESTION_MESSAGE, null, service, service[0]);
+				
+				//PAREI AQUI, USAR opcoes PARA PEGAR O cod DE tipo_servico
+				
+				
+				
+				String query = "SELECT * FROM tipo_servico WHERE descr = '"+opcoes+"' LIMIT 1";
 				PreparedStatement psTipoServ = conex.prepareStatement(query);
 				rsTipoServ = psTipoServ.executeQuery();
 				if(rsTipoServ.first()){
 					String descri = rsTipoServ.getString("descr");
 					txtrDescrip.setText(rsTipoServ.getString("descr"));
 					lblTipoServ.setText(rsTipoServ.getString("categoria"));
+					FieldCodServ.setText(rsTipoServ.getString("cod"));
 					psTipoServ.close();
 					conex.close();
+					rsTipoServ.close();
 				} else{
 					txtrDescrip.setText("Serviço não encontrado");
 					psTipoServ.close();

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -29,7 +30,6 @@ public class TelaLogin extends JFrame implements ActionListener {
 	private JPanel contentPane;
 	private JTextField fieldLogin;
 	private JButton btnEntrar;
-	private JButton btnCadastrar;
 	private JPasswordField fieldSenha;
 
 	/**
@@ -87,9 +87,6 @@ public class TelaLogin extends JFrame implements ActionListener {
 		btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(this);
 		
-		btnCadastrar = new JButton("Cadastar");
-		btnCadastrar.addActionListener(this);
-		
 		fieldSenha = new JPasswordField();
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -106,9 +103,6 @@ public class TelaLogin extends JFrame implements ActionListener {
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(14)
 							.addComponent(btnEntrar))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(9)
-							.addComponent(btnCadastrar))
 						.addComponent(fieldSenha))
 					.addContainerGap(133, Short.MAX_VALUE))
 		);
@@ -125,9 +119,7 @@ public class TelaLogin extends JFrame implements ActionListener {
 						.addComponent(fieldSenha, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnEntrar)
-					.addGap(18)
-					.addComponent(btnCadastrar)
-					.addContainerGap(16, Short.MAX_VALUE))
+					.addContainerGap(58, Short.MAX_VALUE))
 		);
 		contentPane.setLayout(gl_contentPane);
 		
@@ -156,6 +148,17 @@ public class TelaLogin extends JFrame implements ActionListener {
 				else{		//SUCESSO! USUÁRIO ENCONTRADO!
 					if(rsCPF.first() && senha.equals(rsCPF.getString("senha"))){
 						if(userfunc==1){		//usuario logando
+							
+							//EXECUTAR PROCEDURE loginCli (IN logincpf CHAR(12), IN senha VARCHAR(15))
+							try{
+								
+							CallableStatement csLoginCli = conex.prepareCall("{call loginCli(?,?)}");
+							csLoginCli.setString(cpf, senha);
+							csLoginCli.execute();
+							csLoginCli.close();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 							Cliente user = new Cliente(rsCPF);
 							dispose();
 							TelaUsuario tela = new TelaUsuario(user);
@@ -183,10 +186,6 @@ public class TelaLogin extends JFrame implements ActionListener {
 				e.printStackTrace();
 			}
 		}
-		if(evento.getSource().equals(btnCadastrar)){
-			dispose();
-			TelaCadastro tela = new TelaCadastro();
-			tela.setVisible(true);
-		}
+		
 	}
 }

@@ -1,5 +1,36 @@
 -- SELECT nome, v_total, qtd, dia  FROM ((CLIENTE INNER JOIN pedido_produto) INNER JOIN ITEM_PRODUTO) ORDER BY nome;
 -- SELECT * FROM FUNCIONARIO WHERE CPF = '3371611' LIMIT 1;
+-- 1 para 1 - FK unique
+
+-- CREATE PROCEDURE modAg (IN idag)
+
+-- DELIMITER //
+-- CREATE PROCEDURE getAg 
+-- (IN nomeCli VARCHAR(50), OUT idagen INT)
+-- BEGIN
+-- 
+-- END //
+
+-- FAZER USUARIOS 
+-- PROCEDURE ->FAZER VIEW PARA ANIMAIS DE UM CLIENTE E FAZER GRANT DESSA VIEW PARA ESSE CLIENTE
+
+
+
+
+
+DELIMITER //
+CREATE PROCEDURE loginCli (IN logincpf CHAR(12), IN senha VARCHAR(15))
+BEGIN
+	IF (SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = logincpf)!=1)
+    THEN
+        CREATE USER logincpf@'localhost' IDENTIFIED BY senha;
+        CREATE VIEW vanimaiscli AS SELECT * FROM animal WHERE cpf_cliente=logincpf;
+		GRANT INSERT,SELECT,UPDATE,DELETE ON vanimaiscli TO login;
+		FLUSH PRIVILEGES;
+	END IF;
+	
+END //
+
 CREATE TABLE ALMOXARIFADO(
 id integer(7), 
 descr varchar(100) not null,
@@ -95,7 +126,7 @@ CREATE TABLE PEDIDO_PRODUTO(
 cod varchar(10), 
 cod_fat bigint(10),
 dia date not null, 
-v_total numeric(6,2) not null, 
+v_total numeric(6,2) not null unique, 
 stats enum('confirmado', 'não finalizado', 'erro ao processar pedido') not null, 
 desconto numeric(6,2), 
 cpf_cliente char(12) not null,
