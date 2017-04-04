@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -148,14 +149,32 @@ public class TelaLogin extends JFrame implements ActionListener {
 				else{		//SUCESSO! USUÁRIO ENCONTRADO!
 					if(rsCPF.first() && senha.equals(rsCPF.getString("senha"))){
 						if(userfunc==1){		//usuario logando
-							
-							//EXECUTAR PROCEDURE loginCli (IN logincpf CHAR(12), IN senha VARCHAR(15))
+							int criado = -1;
 							try{
 								
-							CallableStatement csLoginCli = conex.prepareCall("{call loginCli(?,?)}");
-							csLoginCli.setString(cpf, senha);
-							csLoginCli.execute();
-							csLoginCli.close();
+							CallableStatement csexistUser = conex.prepareCall("{call existUser(?,?)}");
+							csexistUser.setString("logincpf", cpf);
+							csexistUser.registerOutParameter("sim", Types.INTEGER);
+							csexistUser.execute();
+							
+							criado = csexistUser.getInt("sim");
+							System.out.println(criado);
+							
+							csexistUser.close();
+							if(criado == 0){
+							CallableStatement csgrantCli = conex.prepareCall("{call grantCli(?)}");
+							Statement screate = conex.createStatement();
+							screate.execute("CREATE USER '"+cpf+"'@'localhost' IDENTIFIED BY '"+senha+"';");
+							csgrantCli.setString("logincpf",cpf);
+							
+							csgrantCli.execute();
+							//System.out.println(csgrantCli.getString(2)); //RECEBENDO CERTO
+							csgrantCli.close();
+							screate.close();
+							}
+							else if(criado == -1)
+								System.out.println("NÃO FUNCIONOU A CONSULTA");
+							
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -167,6 +186,34 @@ public class TelaLogin extends JFrame implements ActionListener {
 							conex.close();
 						}
 						else if(userfunc==2){		//funcionario logando
+							int criado = -1;
+							try{
+								
+							CallableStatement csexistUser = conex.prepareCall("{call existUser(?,?)}");
+							csexistUser.setString("logincpf", cpf);
+							csexistUser.registerOutParameter("sim", Types.INTEGER);
+							csexistUser.execute();
+							
+							criado = csexistUser.getInt("sim");
+							System.out.println(criado);
+							
+							csexistUser.close();
+							if(criado == 0){
+							CallableStatement csgrantFunc = conex.prepareCall("{call grantFunc(?)}");
+							Statement screate = conex.createStatement();
+							screate.execute("CREATE USER '"+cpf+"'@'localhost' IDENTIFIED BY '"+senha+"';");
+							csgrantFunc.setString("logincpf",cpf);
+							csgrantFunc.execute();
+							csgrantFunc.close();
+							screate.close();
+							}
+							else if(criado == -1)
+								System.out.println("NÃO FUNCIONOU A CONSULTA");
+							
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							
 							Funcionario func = new Funcionario(rsCPF);
 							dispose();
 							TelaFuncionario tela = new TelaFuncionario(func);

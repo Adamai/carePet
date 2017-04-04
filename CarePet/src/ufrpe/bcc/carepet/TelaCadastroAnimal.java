@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -37,7 +39,7 @@ public class TelaCadastroAnimal extends JFrame implements ActionListener{
 	private JTextField txtNome;
 	private JTextField txtDdmmaaaa;
 	private JList listRaca;
-	private JButton btnVerObs;
+	protected DefaultListModel listaRaca = new DefaultListModel();
 	private JLabel lblObs;
 	private ResultSet racaRS;
 	private ResultSet substRS;
@@ -82,13 +84,14 @@ static {
 		}
 	}
 	
-	public static Connection getConexao() throws SQLException {
-		
-		Connection retorno = null;
-		retorno = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", "root", "paloma"); // nome do esquema, usuário e senha
-		return retorno;
-	}
+public static Connection getConexao(Cliente user) throws SQLException {
+	
+	Connection retorno = null;
+	retorno = DriverManager.getConnection(
+			"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", user.getCPF(), user.getSenha()); // nome do esquema, usuário e senha
+	//System.out.println(user.getCPF()+" "+user.getSenha());
+	return retorno;
+}
 	
 	public TelaCadastroAnimal(Cliente user) {
 		usuario = user;
@@ -115,14 +118,14 @@ static {
 		
 		
 		
-		ArrayList racas = new ArrayList();
+		
 		try{
-		Connection conec = getConexao();
+		Connection conec = getConexao(user);
 		String query = "SELECT * FROM RAÇA";
 		PreparedStatement getRacasST = conec.prepareStatement(query);
 		racaRS = getRacasST.executeQuery();
 		while(racaRS.next()){
-			racas.add(racaRS.getString("descr"));
+			listaRaca.addElement(racaRS.getString("descr"));
 		}
 		getRacasST.close();
 		racaRS.close();
@@ -134,7 +137,7 @@ static {
 		
 		ArrayList subst = new ArrayList();
 		try{
-		Connection conec = getConexao();
+		Connection conec = getConexao(user);
 		String query = "SELECT * FROM SUBSTANCIA";
 		PreparedStatement getSubstST = conec.prepareStatement(query);
 		substRS = getSubstST.executeQuery();
@@ -151,9 +154,6 @@ static {
 		
 		
 		JLabel lblRaca = new JLabel("Descri\u00E7\u00E3o de Ra\u00E7a:");
-		
-		btnVerObs = new JButton("Ver observa\u00E7\u00E3o");
-		btnVerObs.addActionListener(this);
 		
 		
 		JLabel lblDescrio = new JLabel("Observa\u00E7\u00E3o:");
@@ -215,10 +215,7 @@ static {
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addContainerGap()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 277, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnVerObs))
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 277, GroupLayout.PREFERRED_SIZE)
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 										.addComponent(btnAddtolist)
@@ -241,22 +238,19 @@ static {
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblNome)
-								.addComponent(txtNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(18)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblDataDeNascimento)
-								.addComponent(txtDdmmaaaa, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblcasoNoSaiba)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(lblRaca)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 154, GroupLayout.PREFERRED_SIZE))
-						.addComponent(btnVerObs))
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNome)
+						.addComponent(txtNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblDataDeNascimento)
+						.addComponent(txtDdmmaaaa, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblcasoNoSaiba)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblRaca)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 154, GroupLayout.PREFERRED_SIZE)
 					.addGap(12)
 					.addComponent(lblDescrio)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -272,8 +266,8 @@ static {
 						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, gl_contentPane.createParallelGroup(Alignment.BASELINE)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 							.addComponent(btnCadastrar)
 							.addComponent(btnVoltar))
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
@@ -288,35 +282,41 @@ static {
 		listSub = new JList();
 		listSub.setModel(listaSubs);
 		scrollPane_1.setViewportView(listSub);
-		listRaca = new JList(racas.toArray());
+		listRaca = new JList();
+		listRaca.setModel(listaRaca);
 		scrollPane.setViewportView(listRaca);
 		
 		contentPane.setLayout(gl_contentPane);
 		
-		
+		listRaca.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+	            if (!arg0.getValueIsAdjusting()) {
+	            	
+	      		try{
+	    			Connection conex = getConexao(usuario);
+	    			String query = "SELECT * FROM raça WHERE descr='"+listRaca.getSelectedValue().toString()+"' LIMIT 1;";
+					//System.out.println(listRaca.getSelectedValue().toString());
+					PreparedStatement getDescr = conex.prepareStatement(query);
+					ResultSet descrRS = getDescr.executeQuery();
+					descrRS.next();
+					lblObs.setText(descrRS.getString("obs"));
+					lblPorte.setText(descrRS.getString("porte_animal"));
+					
+					getDescr.close();
+					descrRS.close();
+					conex.close();
+	    			
+	      		} catch (SQLException e) {
+	    			System.out.println("Houve erro2");
+	    			e.printStackTrace();
+	    		}
+	            }
+	        }
+		});
 		
 	}
 	public void actionPerformed(ActionEvent evento){
-		if(evento.getSource().equals(btnVerObs)){
-			try{
-				Connection conec = getConexao();
-				String query = "SELECT * FROM raça WHERE descr='"+listRaca.getSelectedValue().toString()+"' LIMIT 1;";
-				//System.out.println(listRaca.getSelectedValue().toString());
-				PreparedStatement getDescr = conec.prepareStatement(query);
-				ResultSet descrRS = getDescr.executeQuery();
-				descrRS.next();
-				lblObs.setText(descrRS.getString("obs"));
-				lblPorte.setText(descrRS.getString("porte_animal"));
-				
-				getDescr.close();
-				descrRS.close();
-				conec.close();
-				}catch (SQLException e) {
-					System.out.println("Houve erro");
-					e.printStackTrace();
-				}
-		}
-		
 		if(evento.getSource().equals(btnAddtolist)){
 			//System.out.println(listSub.getSelectedValue().toString());
 			if(listSub.getSelectedValue()!=null){
@@ -342,7 +342,7 @@ static {
 		}
 		if(evento.getSource().equals(btnCadastrar)){
 			try{
-				Connection conec = getConexao();
+				Connection conec = getConexao(usuario);
 				Statement cadastrarST = conec.createStatement();
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 				LocalDate localDate = LocalDate.now();		//dtf.format(localDate) == 2016/11/16
@@ -367,13 +367,13 @@ static {
 				PreparedStatement getDescr = conec.prepareStatement(query);
 				ResultSet descrRS = getDescr.executeQuery();
 				descrRS.next();
-				cadastrarST.execute("INSERT INTO animal(nomea,dt_nasc,idade,cpf_cliente,cod_raça) VALUES ('"
+				cadastrarST.execute("INSERT INTO vanimaiscli(nomea,dt_nasca,idade,cpf_cliente,cod_raça) VALUES ('"
 						+txtNome.getText()+"',STR_TO_DATE('"+txtDdmmaaaa.getText()+"', '%d/%m/%Y'),"+idade+",'"+usuario.getCPF()+
 						"',"+descrRS.getString("cod")+");");
 				if(!listaAler.isEmpty()){
 					for(int i=0; i<listaAler.size();i++){
-					query = "SELECT * FROM animal WHERE nomea = '"+txtNome.getText()+"' AND cpf_cliente = '"+usuario.getCPF()+
-							"' AND dt_nasc=STR_TO_DATE('"+txtDdmmaaaa.getText()+"', '%d/%m/%Y') LIMIT 1;";
+					query = "SELECT * FROM vanimaiscli WHERE nomea = '"+txtNome.getText()+"' AND cpf_cliente = '"+usuario.getCPF()+
+							"' AND dt_nasca=STR_TO_DATE('"+txtDdmmaaaa.getText()+"', '%d/%m/%Y') LIMIT 1;";
 					PreparedStatement getani = conec.prepareStatement(query);
 					ResultSet aniRS = getani.executeQuery();
 					aniRS.next();
@@ -381,7 +381,7 @@ static {
 					PreparedStatement getsub = conec.prepareStatement(query2);
 					ResultSet subRS = getsub.executeQuery();
 					subRS.next();
-					cadastrarST.execute("INSERT INTO alergico(id_animal,cod_substancia) VALUES ('"+aniRS.getString("id")+
+					cadastrarST.execute("INSERT INTO valergico(id_animal,cod_substancia) VALUES ('"+aniRS.getString("ida")+
 							"','"+subRS.getString("cod")+"');");
 					}
 				}

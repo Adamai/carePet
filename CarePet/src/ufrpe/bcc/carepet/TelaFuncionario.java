@@ -46,13 +46,13 @@ static {
 		}
 	}
 	
-	public static Connection getConexao() throws SQLException {
-		
-		Connection retorno = null;
-		retorno = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", "root", "paloma"); // nome do esquema, usuário e senha
-		return retorno;
-	}
+public static Connection getConexao(Funcionario func) throws SQLException {
+	
+	Connection retorno = null;
+	retorno = DriverManager.getConnection(
+			"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", func.getCPF(), func.getSenha()); // nome do esquema, usuário e senha
+	return retorno;
+}
 	
 	public TelaFuncionario(Funcionario func) {
 		this.func = func;
@@ -185,8 +185,8 @@ static {
 		if(evento.getSource().equals(btnConfirmarCliente)){
 			if(func.getTipofunc().equals("Tecnico")){
 			try{
-				Connection conex = getConexao();
-				PreparedStatement psGetcli = conex.prepareStatement("UPDATE cliente SET confirmado='1' WHERE cpf='"+txtCpfCliente.getText()+"';");
+				Connection conex = getConexao(func);
+				PreparedStatement psGetcli = conex.prepareStatement("UPDATE cliente SET confirmadoc='1' WHERE cpf='"+txtCpfCliente.getText()+"';");
 				psGetcli.execute();
 				//if(psGetcli.execute("SELECT * FROM cliente WHERE cpf='"+txtCpfCliente.getText()+"';"))
 				//	JOptionPane.showMessageDialog(null, "Cliente com CPF="+txtCpfCliente.getText()+" confirmado");
@@ -216,7 +216,7 @@ static {
 		}
 		if(evento.getSource().equals(btnProduto)){
 			try{
-				Connection conex = getConexao();
+				Connection conex = getConexao(func);
 				String query1 = "SELECT * FROM produto_ref WHERE cod="+txtProduto.getText()+" LIMIT 1;";
 				PreparedStatement  psGetpro = conex.prepareStatement(query1);
 				ResultSet rsGetpro = psGetpro.executeQuery();

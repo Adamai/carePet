@@ -14,7 +14,8 @@ public class Cliente {
 	private String dtUltLogin;
 	private String cartCred;
 	private String confirm;
-	
+	private String senha;
+
 	Cliente(ResultSet cli){
 		try{
 			cli.first();
@@ -27,7 +28,8 @@ public class Cliente {
 			logradouro = cli.getString("Logradouro");
 			dtUltLogin = cli.getString("dt_ultimo_login");
 			cartCred = cli.getString("cartão_cred");
-			confirm = cli.getString("confirmado");
+			confirm = cli.getString("confirmadoc");
+			senha = cli.getString("senha");
 			} catch (SQLException e) {
 				System.out.println("Houve erro no acesso das informacoes (objeto Cliente)");
 				e.printStackTrace();
@@ -120,6 +122,10 @@ public class Cliente {
 		this.confirm = confirm;
 	}
 	
+	public String getSenha() {
+		return senha;
+	}
+
 	
 
 }

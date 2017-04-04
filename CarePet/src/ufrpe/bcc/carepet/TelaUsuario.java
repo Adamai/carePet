@@ -69,11 +69,12 @@ static {
 		}
 	}
 	
-	public static Connection getConexao() throws SQLException {
+	public static Connection getConexao(Cliente user) throws SQLException {
 		
 		Connection retorno = null;
 		retorno = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", "root", "paloma"); // nome do esquema, usuário e senha
+				"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", user.getCPF(), user.getSenha()); // nome do esquema, usuário e senha
+		//System.out.println(user.getCPF()+" "+user.getSenha());
 		return retorno;
 	}
 	/**
@@ -89,8 +90,8 @@ static {
 		
 		
 		try{
-			Connection conex = getConexao();
-			String query = "SELECT * FROM animal WHERE cpf_cliente = "+user.getCPF()+";";
+			Connection conex = getConexao(usuario);
+			String query = "SELECT * FROM vanimaiscli;";
 			PreparedStatement psGetAni = conex.prepareStatement(query);
 			ResultSet rsGetAni = psGetAni.executeQuery();
 			while(rsGetAni.next()){
@@ -100,24 +101,25 @@ static {
 			psGetAni.close();
 			conex.close();
 		} catch (SQLException e) {
-			System.out.println("Houve erro");
+			System.out.println("Houve erro1");
 			e.printStackTrace();
 		}
 		if(ilista!=0)
 			list.setModel(model);
 		
-
+			// PAREI AQUI! TROCAR TODOS OS SELECT FROM ANIMAL para FROM vanimaiscli
 		list.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
 	            if (!arg0.getValueIsAdjusting()) {
-	              Nomea.setText(list.getSelectedValue().toString());
+	            	if(list.getSelectedValue()!=null)
+	            		Nomea.setText(list.getSelectedValue().toString());
 	      		try{
-	    			Connection conex = getConexao();
+	    			Connection conex = getConexao(usuario);
 	    			Statement getRaca = conex.createStatement();
-	    			ResultSet rsGetAni = getRaca.executeQuery("SELECT * FROM animal WHERE cpf_cliente="+user.getCPF()+" AND nomea='"+list.getSelectedValue().toString()+"' LIMIT 1;");
+	    			ResultSet rsGetAni = getRaca.executeQuery("SELECT * FROM vanimaiscli WHERE nomea='"+list.getSelectedValue().toString()+"' LIMIT 1;");
 	    			rsGetAni.next();
-	    			String idani = rsGetAni.getString("id");
+	    			String idani = rsGetAni.getString("ida");
 	    			String query = "SELECT * FROM raça WHERE cod="+rsGetAni.getString("cod_raça")+";";
 	    			PreparedStatement psGetRaca = conex.prepareStatement(query);
 	    			ResultSet rsGetRaca = psGetRaca.executeQuery();
@@ -125,7 +127,7 @@ static {
 	    			Idadea.setText("Idade: "+rsGetAni.getString("idade"));
 	    			Descra.setText(rsGetRaca.getString("descr"));
 	    			Obsa.setText(rsGetRaca.getString("obs"));
-	    			rsGetAni = getRaca.executeQuery("SELECT * FROM alergico WHERE id_animal="+idani+" ;");
+	    			rsGetAni = getRaca.executeQuery("SELECT * FROM valergico WHERE id_animal="+idani+" ;");
 	    			StringBuffer alergenos = new StringBuffer();
 	    			while(rsGetAni.next()){
 	    				query = "SELECT * FROM substancia WHERE cod="+rsGetAni.getString("cod_substancia")+" LIMIT 1;";
@@ -140,7 +142,7 @@ static {
 	    			psGetRaca.close();
 	    			conex.close();
 	    		} catch (SQLException e) {
-	    			System.out.println("Houve erro");
+	    			System.out.println("Houve erro2");
 	    			e.printStackTrace();
 	    		}
 	            }
@@ -247,22 +249,24 @@ static {
 		if(evento.getSource().equals(btnRem)){
 			if(ilista!=0 && list.getSelectedValue()!=null){
 				try{
-					Connection conex = getConexao();
-					String queryb = "SELECT * FROM animal WHERE cpf_cliente = "+usuario.getCPF()+" AND "
-							+ "nomea='"+list.getSelectedValue().toString()+"' LIMIT 1;";
-					String query = "DELETE FROM animal WHERE cpf_cliente = "+usuario.getCPF()+" AND "
-							+ "nomea='"+list.getSelectedValue().toString()+"';";
+					Connection conex = getConexao(usuario);
+					Statement constignore = conex.createStatement();
+					constignore.execute("SET foreign_key_checks = 0;");
+					String queryb = "SELECT * FROM vanimaiscli WHERE nomea='"+list.getSelectedValue().toString()+"' LIMIT 1;";
+					String query = "DELETE FROM vanimaiscli WHERE nomea='"+list.getSelectedValue().toString()+"';";
 					PreparedStatement psDelAni = conex.prepareStatement(queryb);
 					ResultSet rsAni = psDelAni.executeQuery();
 					rsAni.next();
 					String idani = rsAni.getString("id");
-					psDelAni.execute("DELETE FROM alergico WHERE id_animal = "+ "'"+idani+"';");
+					psDelAni.execute("DELETE FROM valergico WHERE id_animal = "+ "'"+idani+"';");
 					psDelAni = conex.prepareStatement(query);
 					psDelAni.execute();
+					constignore.execute("SET foreign_key_checks = 1;");
+					constignore.close();
 					psDelAni.close();
 					conex.close();
 				} catch (SQLException e) {
-					System.out.println("Houve erro");
+					System.out.println("Houve erro3");
 					e.printStackTrace();
 				}
 				model.removeElement(list.getSelectedValue().toString());
@@ -280,56 +284,19 @@ static {
 			TelaCadastroAnimal tela = new TelaCadastroAnimal(usuario);
 			tela.setVisible(true);
 		}
-		if(evento.getSource().equals(btnFatura)){
+		/*if(evento.getSource().equals(btnFatura)){
 			float fatmen = 0;
 			int laterd =0;
 			int laterm=0;
 			int latera = 0;
 			try{
-				Connection conex = getConexao();
-				Statement sgetFats = conex.createStatement();
-				ResultSet rsgetFats = sgetFats.executeQuery("SELECT * FROM animal WHERE cpf_cliente='"+usuario.getCPF()+
-						"' ;");
-				while(rsgetFats.next()){
-					PreparedStatement psgetEnv = conex.prepareStatement("SELECT * FROM envolve where id_animal="+rsgetFats.getString("id")+" ;");
-					ResultSet rsgetEnv = psgetEnv.executeQuery();
-					while(rsgetEnv.next()){
-						PreparedStatement psgetAgen = conex.prepareStatement("SELECT * FROM agendamento where id="+rsgetEnv.getString("id_agend")+" AND"
-								+ " YEAR(dt_agenda)="+textMes.getText().substring(3)+" AND MONTH(dt_agenda)="+textMes.getText().substring(0, 2)+";");
-						ResultSet rsgetAgen = psgetAgen.executeQuery();
-						Statement slater = conex.createStatement();
-						ResultSet rslater = slater.executeQuery("SELECT * FROM agendamento where id="+rsgetEnv.getString("id_agend")+";");
-						while(rslater.next()){
-							if(Integer.parseInt(rslater.getString("dt_agenda").substring(0,4))>=latera &&
-							Integer.parseInt(rslater.getString("dt_agenda").substring(5,7))>=laterm &&
-							Integer.parseInt(rslater.getString("dt_agenda").substring(8,10))>laterd){
-								latera=Integer.parseInt(rslater.getString("dt_agenda").substring(0,4));
-								laterm=Integer.parseInt(rslater.getString("dt_agenda").substring(8,10));
-								laterd=Integer.parseInt(rslater.getString("dt_agenda").substring(8,10));
-											}
-						}
-						while(rsgetAgen.next()){
-							PreparedStatement psgetFat = conex.prepareStatement("SELECT * FROM fatura WHERE id_cod="+rsgetAgen.getString("cod_fatura")+" AND"
-									+ " stats!='pagamento confirmado';");
-							ResultSet rsgetFat = psgetFat.executeQuery();
-							while(rsgetFat.next()){
-								fatmen = fatmen + Float.parseFloat(rsgetFat.getString("vl_total"));
-							} rsgetFat.close();psgetFat.close();
-						}rsgetAgen.close();psgetAgen.close();
-					}rsgetEnv.close();psgetEnv.close();
-				} rsgetFats.close();conex.close();
-				if(fatmen>0){ //gerar fatura
-					Statement setFat = conex.createStatement();
-					setFat.executeQuery("INSERT INTO fatura(stats, vl_total, dt_vencimento) VALUES("
-						+ "'aguardando confirmação de pagamento',"+
-							fatmen+",STR_TO_DATE('"+laterd+"/"+laterm+"/"+latera+"', '%d/%m/%y');");
-					JOptionPane.showMessageDialog(null, "Fatura gerada");
-					setFat.close();
+				Connection conex = getConexao(usuario);
+				// A FAZER USANDO faturames(IN mesano DATE,IN clicpf CHAR(12), OUT valorpagar NUMERIC(6,2), OUT diapagar DATE)
 				}
 			}  catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		/*if(evento.getSource().equals(btnCadastrarAgendamento)){
 			dispose();
 			TelaAgendamento tela = new TelaAgendamento(usuario);

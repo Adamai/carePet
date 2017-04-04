@@ -15,7 +15,9 @@ public class Funcionario {
 	private String codEstab;
 	private String CRMV;
 	private String tipofunc;
-	
+	private String senha;
+
+
 	Funcionario(ResultSet Func){
 		try{
 		Func.first();
@@ -30,6 +32,7 @@ public class Funcionario {
 		codEstab = Func.getString("cod_est");
 		CRMV = Func.getString("CRMV");
 		tipofunc = Func.getString("tipo_fun");
+		senha = Func.getString("senha");
 		} catch (SQLException e) {
 			System.out.println("Houve erro no acesso das informacoes (objeto Funcionario)");
 			e.printStackTrace();
@@ -127,6 +130,9 @@ public class Funcionario {
 		this.tipofunc = tipofunc;
 	}
 	
+	public String getSenha() {
+		return senha;
+	}
 
 
 }

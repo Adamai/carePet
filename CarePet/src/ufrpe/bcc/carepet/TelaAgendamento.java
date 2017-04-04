@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -47,7 +48,6 @@ public class TelaAgendamento extends JFrame implements ActionListener{
 	private JLabel lblTipoServ;
 	private ResultSet rsTipoServ;
 	private JTextField textObs;
-	private JTextField textPrice;
 	private DefaultListModel model;
 	private JButton btnVoltar;
 	private Funcionario funcionario;
@@ -63,6 +63,7 @@ public class TelaAgendamento extends JFrame implements ActionListener{
 	private JScrollPane scrollPane;
 	private JList listCli = new JList();
 	private DefaultListModel modelCl = new DefaultListModel();
+	private Connection conec;
 
 	/**
 	 * Launch the application.
@@ -93,13 +94,13 @@ static {
 		}
 	}
 	
-	public static Connection getConexao() throws SQLException {
-		
-		Connection retorno = null;
-		retorno = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false", "root", "paloma"); // nome do esquema, usuário e senha
-		return retorno;
-	}
+public static Connection getConexao(Funcionario func) throws SQLException {
+	
+	Connection retorno = null;
+	retorno = DriverManager.getConnection(
+			"jdbc:mysql://localhost:3306/carepet?autoReconnect=true&useSSL=false&noAccessToProcedureBodies=true", func.getCPF(), func.getSenha()); // nome do esquema, usuário e senha
+	return retorno;
+}
 	
 	public TelaAgendamento(Funcionario func) {
 		funcionario = func;
@@ -114,16 +115,17 @@ static {
 		
 		int ilista = 0;
 		try{
-			Connection conex = getConexao();
+			conec = getConexao(func);
+			conec.setAutoCommit(false);
 			String query = "	SELECT * FROM cliente;";
-			PreparedStatement psGetCli = conex.prepareStatement(query);
+			PreparedStatement psGetCli = conec.prepareStatement(query);
 			ResultSet rsGetCli = psGetCli.executeQuery();
 			while(rsGetCli.next()){
 				modelCl.addElement(rsGetCli.getString("nome"));
 				ilista++;
 			}
 			psGetCli.close();
-			conex.close();
+			conec.close();
 		} catch (SQLException e) {
 			System.out.println("Houve erro");
 			e.printStackTrace();
@@ -135,8 +137,9 @@ static {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) { 
 				try{
-	      			Connection conex = getConexao();
-	      			PreparedStatement pscpf = conex.prepareStatement("SELECT CPF FROM cliente where nome='"+listCli.getSelectedValue().toString()+"';");
+	      			conec = getConexao(funcionario);
+	      			conec.setAutoCommit(false);
+	      			PreparedStatement pscpf = conec.prepareStatement("SELECT CPF FROM cliente where nome='"+listCli.getSelectedValue().toString()+"';");
 	      			ResultSet rscpf = pscpf.executeQuery();
 	      			rscpf.next();
 	      			FieldCPF.setText(rscpf.getString("CPF"));
@@ -232,12 +235,6 @@ static {
 		textObs = new JTextField();
 		textObs.setColumns(10);
 		
-		JLabel lblPrice = new JLabel("Pre\u00E7o:");
-		
-		textPrice = new JTextField();
-		textPrice.setText("000.00");
-		textPrice.setColumns(10);
-		
 		btnVoltar = new JButton("Voltar");
 		btnVoltar.addActionListener(this);
 		
@@ -314,8 +311,9 @@ static {
 															.addPreferredGap(ComponentPlacement.RELATED)
 															.addComponent(textMes, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
 															.addPreferredGap(ComponentPlacement.RELATED)
-															.addComponent(textAno, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-														.addComponent(textHora, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+															.addComponent(textAno, GroupLayout.PREFERRED_SIZE, 49, GroupLayout.PREFERRED_SIZE))
+														.addComponent(textHora, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+													.addPreferredGap(ComponentPlacement.RELATED)))
 											.addComponent(lblTipoServ)
 											.addGroup(gl_contentPane.createSequentialGroup()
 												.addComponent(lblCodServ)
@@ -331,13 +329,10 @@ static {
 												.addPreferredGap(ComponentPlacement.RELATED)
 												.addComponent(textHoraF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
 									.addComponent(txtrDescrip, GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
-								.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblPrice)
 								.addComponent(lblObs))
 							.addPreferredGap(ComponentPlacement.RELATED, 136, Short.MAX_VALUE)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-									.addGap(23)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+								.addGroup(gl_contentPane.createSequentialGroup()
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
 										.addGroup(gl_contentPane.createSequentialGroup()
 											.addComponent(list, GroupLayout.PREFERRED_SIZE, 207, GroupLayout.PREFERRED_SIZE)
@@ -351,7 +346,7 @@ static {
 												.addComponent(btnConsultarAnimais))
 											.addGap(56)))
 									.addGap(10))
-								.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
 									.addGap(55))))))
 		);
@@ -391,11 +386,7 @@ static {
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(lblObs)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(textObs, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblPrice)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(textPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addComponent(textObs, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(118)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
@@ -417,7 +408,7 @@ static {
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 										.addComponent(lblNomeDoLa)
 										.addComponent(textLabNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-									.addPreferredGap(ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 										.addComponent(textLabTel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(lblTelefone))))
@@ -430,7 +421,7 @@ static {
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGap(31)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(382, Short.MAX_VALUE))
+					.addContainerGap(429, Short.MAX_VALUE))
 		);
 		
 		
@@ -445,9 +436,9 @@ static {
 	public void actionPerformed(ActionEvent evento){
 		if(evento.getSource().equals(btnChecarServ)){
 			try{
-				Connection conex = getConexao();
-				
-				PreparedStatement psgetserv = conex.prepareStatement("SELECT * FROM tipo_servico;");
+				conec = getConexao(funcionario);
+				conec.setAutoCommit(false);
+				PreparedStatement psgetserv = conec.prepareStatement("SELECT * FROM tipo_servico;");
 				ResultSet rsgetserv = psgetserv.executeQuery();
 				ArrayList tservico = new ArrayList();
 				String[] service = {};
@@ -459,13 +450,9 @@ static {
 					tservico.toArray(service);
 				}
 				String opcoes = (String) JOptionPane.showInputDialog(null, "Tipos:", "Escolha o serviço", JOptionPane.QUESTION_MESSAGE, null, service, service[0]);
-				
-				//PAREI AQUI, USAR opcoes PARA PEGAR O cod DE tipo_servico
-				
-				
-				
+			
 				String query = "SELECT * FROM tipo_servico WHERE descr = '"+opcoes+"' LIMIT 1";
-				PreparedStatement psTipoServ = conex.prepareStatement(query);
+				PreparedStatement psTipoServ = conec.prepareStatement(query);
 				rsTipoServ = psTipoServ.executeQuery();
 				if(rsTipoServ.first()){
 					String descri = rsTipoServ.getString("descr");
@@ -473,12 +460,12 @@ static {
 					lblTipoServ.setText(rsTipoServ.getString("categoria"));
 					FieldCodServ.setText(rsTipoServ.getString("cod"));
 					psTipoServ.close();
-					conex.close();
+					conec.close();
 					rsTipoServ.close();
 				} else{
 					txtrDescrip.setText("Serviço não encontrado");
 					psTipoServ.close();
-					conex.close();
+					conec.close();
 				}
 				
 			} catch (SQLException e) {
@@ -488,14 +475,36 @@ static {
 		}
 		if(evento.getSource().equals(btnConsultarAnimais)){
 			try{
-				Connection conex = getConexao();
-				String query = "SELECT * FROM animal WHERE cpf_cliente = "+FieldCPF.getText()+";";
-				PreparedStatement psGetAni = conex.prepareStatement(query);
-				ResultSet rsGetAni = psGetAni.executeQuery();
-				while(rsGetAni.next()){
-					model.addElement(rsGetAni.getString("nomea"));
+				int counter = 0;
+				conec = getConexao(funcionario);
+				conec.setAutoCommit(false);
+				String query1 = "SELECT nome FROM cliente WHERE CPF='"+FieldCPF.getText()+"';";
+				PreparedStatement psCheckCli = conec.prepareStatement(query1);
+				ResultSet rsCheck = psCheckCli.executeQuery();
+				while(rsCheck.next()){
+					counter++;
 				}
-				
+				if(counter==0){
+					JOptionPane.showMessageDialog(null, "Usuário não encontrado");
+				}
+				else{
+					counter=0;
+					String query = "SELECT * FROM animal WHERE cpf_cliente='"+FieldCPF.getText()+"';";
+					PreparedStatement psGetAni = conec.prepareStatement(query);
+					ResultSet rsGetAni = psGetAni.executeQuery();
+					model = new DefaultListModel();
+					while(rsGetAni.next()){
+						model.addElement(rsGetAni.getString("nomea"));
+						counter++;
+					}
+					if(counter!=0)
+						list.setModel(model);
+					else {
+						JOptionPane.showMessageDialog(null, "Usuário não possui animais cadastrados");
+						model.removeAllElements();
+						list.setModel(model);
+					}
+				}
 			} catch (SQLException e) {
 				System.out.println("Houve erro");
 				e.printStackTrace();
@@ -508,46 +517,33 @@ static {
 		}
 		if(evento.getSource().equals(btnCriarAgendamento)){
 			try{
-				Connection conec = getConexao();
-				Statement cadastrarST = conec.createStatement();
-				cadastrarST.execute("INSERT INTO fatura(stats, vl_total, dt_venc) VALUES("
-						+ "'aguardando confirmação de pagamento',"+textPrice.getText()+",DATE_ADD(now() , INTERVAL 7 DAY));");
-				ResultSet rscodfat = cadastrarST.executeQuery("SELECT * FROM fatura where stats='aguardando confirmação de pagamento'"
-						+ " AND vl_total="+textPrice.getText()+" ORDER BY 'cod' DESC LIMIT 1;");		
-				rscodfat.next();
-				cadastrarST.execute("INSERT INTO agendamento(tipo_agendamento,hora_inicio,hora_fim,dt_agenda,cod_fatura) VALUES('"
-						+ comboTipo.getSelectedItem()+"',STR_TO_DATE('"+textHora.getText()+"', '%k:%i'),STR_TO_DATE('"+
-						textHoraF.getText()+"', '%k:%i'),now(),"+rscodfat.getString("cod")+");"); //ERRO NO COD WTF
-						
-				cadastrarST.execute("INSERT INTO realiza(cpf_cliente,cpf_func,data_marcada) VALUES('"+FieldCPF.getText()+"','"+
-						funcionario.getCPF()+"',NOW());"						
-						);
-				
-				Statement busca = conec.createStatement();
-				ResultSet rbusca = busca.executeQuery("SELECT * FROM agendamento ORDER BY 'id' DESC LIMIT 1;");
-				rbusca.next();
-				String idagen = rbusca.getString("id");
-				rbusca = busca.executeQuery("SELECT * FROM animal WHERE nomea='"+list.getSelectedValue().toString()+
-						"' and cpf_cliente="+FieldCPF.getText()+";");
-				rbusca.next();
-				String idani = rbusca.getString("id");
-				//pegar idagend do agendamento feito e usar para inserir em o envolve
-				
-				cadastrarST.execute("INSERT INTO envolve(id_animal, id_agend) VALUES("+idani+","+idagen+");");
-				if(comboTipo.equals("CLI")){
+				conec = getConexao(funcionario);
+				conec.setAutoCommit(false);
+				if(comboTipo.getSelectedItem().toString()=="CLI"){
+					CallableStatement csAgendCli = conec.prepareCall("{call agendamentoCLI(?,?,?,?,?,?,?,?,?)}");
+					csAgendCli.setString(1, list.getSelectedValue().toString());
+					csAgendCli.setString(2, FieldCPF.getText());
+					csAgendCli.setString(3, funcionario.getCPF());
+					csAgendCli.setString(4, FieldCodServ.getText());
+					csAgendCli.setString(5, /*"'"+*/textAno.getText()+"-"+textMes.getText()+"-"+textDia.getText()/*+"'"*/);
+					csAgendCli.setString(6, textHora.getText()+":00");
+					csAgendCli.setString(7, textHoraF.getText()+":00");
+					csAgendCli.setString(8, textCliMotivo.getText());
+					csAgendCli.setString(9, textObs.getText());
 					
-				} else if (comboTipo.equals("PET")){
-					
-				} else{//LAB
-					
+					csAgendCli.execute();
+					conec.commit();
 				}
-				rscodfat.close();
-				rbusca.close();
-				cadastrarST.close();
-				busca.close();
-				conec.close();
+				
+				
 			}catch (SQLException e) {
+				try{
+					conec.rollback();
+				} catch (SQLException l) {
+					l.printStackTrace();
+				}
 				System.out.println("Houve erro no cadastro do agendamento");
+				JOptionPane.showMessageDialog(null, "ERRO NO AGENDAMENTO!");
 				e.printStackTrace();
 			}
 			JOptionPane.showMessageDialog(null, "Agendamento Realizado");
